@@ -4,7 +4,7 @@
 
 char buffer[80];
 
-int vspfunc(char *format, ...) {
+int printf(const char *format, ...) {
 	va_list aptr;
 	int ret;
 	va_start(aptr, format);

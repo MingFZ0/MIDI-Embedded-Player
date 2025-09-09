@@ -5,6 +5,6 @@
 #ifndef __PRINTF_H
 #define __PRINTF_H
 
-int vspfunc(char *format, ...);
+int printf(const char *format, ...);
 
 #endif
