@@ -6,8 +6,9 @@
 #include "error_handler.h"
 #include "SysClock.h"
 #include "LED.h"
-#include "UART.h"
 #include "demo.h"
+
+#include "project.h"
 
 #include <stdio.h>
 
@@ -24,12 +25,7 @@ int main(void){
 //	int n = sprintf(buffer, "Hello, World!\r\n");
 //	USART_Write(USART2, (unsigned char *) buffer, n);
 
-	int i = 10;
-	char str[50] = "tutoriaspoint.com";
-	char str2[20] = "Hello,";
-	char str3[20] = "World!";
-	char str4[10] = "\r\n";
-	vspfunc("%s %s %s", str2, str3, str4);
+	run();
 
 	// application run function
 //	run_demo() ;
