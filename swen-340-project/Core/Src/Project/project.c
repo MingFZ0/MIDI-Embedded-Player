@@ -6,10 +6,11 @@
  */
 
 #include "UART.h"
+#include "printf.h"
 
 #include "project.h"
 
-int run(void) {
+void run_project() {
 	char str2[20] = "Hello,";
 	char str3[20] = "World!";
 	char str4[10] = "\r\n";

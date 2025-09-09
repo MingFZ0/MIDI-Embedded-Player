@@ -7,7 +7,7 @@
 #include "SysClock.h"
 #include "LED.h"
 #include "demo.h"
-
+#include "UART.h"
 #include "project.h"
 
 #include <stdio.h>
@@ -25,7 +25,7 @@ int main(void){
 //	int n = sprintf(buffer, "Hello, World!\r\n");
 //	USART_Write(USART2, (unsigned char *) buffer, n);
 
-	run();
+	run_project();
 
 	// application run function
 //	run_demo() ;
