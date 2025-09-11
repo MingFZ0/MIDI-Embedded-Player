@@ -1,0 +1,5 @@
+Header
+Track Length: 6
+Track Format: 1 (the file contains one or more simultaneous tracks (or MIDI outputs) of a sequence)
+Number Tracks: 2
+Division: 256
