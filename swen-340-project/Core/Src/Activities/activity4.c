@@ -3,10 +3,10 @@
 #include "printf.h";
 
 struct header_chunk {
-	char chunk_type [5];
+	char chunk_type [4];
 	unsigned int length;
 	short format;
-	short ntrks;
+	unsigned short ntrks;
 	short division;
 };
 
