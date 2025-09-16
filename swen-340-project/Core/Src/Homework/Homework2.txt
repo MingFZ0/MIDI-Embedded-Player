@@ -1,0 +1,94 @@
+Questions:
+    1. Convert decimal 95 to hexadecimal.
+       Answer: 0x5F
+       Reasoning: 
+	2|95	R1
+	2|47	R1
+	2|23	R1
+	2|11	R1
+	2|5	R1
+	2|2	R0
+	2|1	R1
+	
+	Binary: 0101 1111
+	0101 1111
+	0x05 0xF
+	0x5F
+           
+    2. Convert 0x1CD to unsigned decimal. (Hint: Convert it to binary first!)
+       Answer: 461
+       Reasoning: 
+	0x01 0xC 0xD
+	1    12  13
+	0001 1100 1101
+	
+	000111001101
+	219876543210
+	
+	1 + 0 + 2^2 + 2^3 + 2^6 + 2^7 + 2^8 = 461
+		
+	     
+       
+    3. What is the value of binary 10101011 in decimal if this is a negative number?
+	   Decimal Answer:  85
+	   Reasoning: 
+	   
+	   10101011
+	   01010100 + 1 = 01010101
+	   
+	   01010101
+	   76543210
+
+	   1 + 0 + 2^2 + 2^4 + 2^6 = 85
+		
+	   
+	   
+    4. What is the value of binary 111001111 in decimal if this is an unsigned number?
+       Decimal Answer: 463
+	   Reasoning: 
+	   
+	   111001111
+	   876543210
+		
+	   1 + 2 + 2^2 + 2^3 + 2^6 + 2^7 + 2^8 = 463
+
+    5. Add 0x8BCD and 0x02E6 (assume unsigned numbers):
+       Hexadecimal Answer: 0x8EB3
+       Reasoning: 
+	   
+	   0x08 0xB 0xC 0xD
+	      8 11  12  13
+	   1000	1011 1100 1101
+
+	  	0x02 0xE 0x6
+	     	2  14 6
+	  0000	0010 1110 0110
+
+	  1000 1110 1011 0011
+	  0x08	0xE 0xB 0x3
+	  0x8EB3
+	 
+
+	   
+    6. Add 8 bit binary integers 10101111 and 11011011
+       Hexadecimal Answer: 0x8A
+       Reasoning: 
+	10101111 
+	11011011
+
+	000001010 
+	 10000000
+        1 1000 1010 => 1000 1010
+
+	0x8A
+	   
+    7.	How many bits are in each of the following data types?
+		
+		a. Byte			Answer: 8
+		b. Short 		Answer: 16
+		c. Int      	        Answer: 32
+		d. Long    		Answer: 32 (Normally 64)
+		e. Nibble		Answer: 4
+
+		Nibble, Byte Char, Short, Int, Long
+		4	8	   16     32   (normally 64)
