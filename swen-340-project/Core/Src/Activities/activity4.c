@@ -1,5 +1,6 @@
 //Create a struct to represent the midi header chunk
-#include "./homework/convert_to_uint16.h"
+#include "convert_to_uint16.h"
+#include "convert_to_uint32.h"
 #include "song.h"
 #include "printf.h"
 
@@ -24,9 +25,8 @@ void run() {
 
 	// Print out the pieces of the header one per line
 	printf("Type: %s\r\n", p_header->chunk_type);
-//	convert_to_uint16(p_header->length);
-	printf("Length: %d\r\n", p_header->length);
-	printf("Format: %d\r\n", p_header->format);
-	printf("Num Tracks: %d\r\n", p_header->ntrks);
-	printf("Division: %d\r\n", p_header->division);
+	printf("Length: %d\r\n", convert_to_uint32((uint8_t*) &(p_header->length)));
+	printf("Format: 0x%04x\r\n", convert_to_uint16((uint8_t*) &(p_header->format)));
+	printf("Num Tracks: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->ntrks)));
+	printf("Division: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->division)));
 }
