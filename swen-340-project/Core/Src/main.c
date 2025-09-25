@@ -10,6 +10,8 @@
 #include "UART.h"
 #include "project.h"
 #include "activity4.h"
+#include "activity5.h"
+#include "activity6.h"
 
 #include <stdio.h>
 
@@ -25,9 +27,12 @@ int main(void){
 //	char buffer[64];
 //	int n = sprintf(buffer, "Hello, World!\r\n");
 //	USART_Write(USART2, (unsigned char *) buffer, n);
+//	run_activity5();
+
+	activity6_run();
 
 //	run_project();
-	run();
+//	run();
 
 	// application run function
 //	run_demo() ;

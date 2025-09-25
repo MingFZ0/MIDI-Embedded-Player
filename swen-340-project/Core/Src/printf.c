@@ -4,6 +4,14 @@
 
 char buffer[120];
 
+int putchar(int value) {
+	USART_Write(USART2, (unsigned char*) &value, 1);
+	if (value == '\r') {
+		USART_Write(USART2, (unsigned char*) "\n", 1);
+	}
+	return 1;
+}
+
 int puts(const char* string) {
 	int ret = strlen (string);
 	USART_Write (USART2, (unsigned char*) string, ret);
