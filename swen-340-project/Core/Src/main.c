@@ -12,6 +12,7 @@
 #include "activity4.h"
 #include "activity5.h"
 #include "activity6.h"
+#include "activity7.h"
 
 #include <stdio.h>
 
@@ -29,12 +30,13 @@ int main(void){
 //	USART_Write(USART2, (unsigned char *) buffer, n);
 //	run_activity5();
 
-	activity6_run();
+//	activity6_run();
 
 //	run_project();
 //	run();
 
 	// application run function
+	LEDOntyped();
 //	run_demo() ;
 }
 
