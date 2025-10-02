@@ -14,23 +14,30 @@ struct sys_tick {
 
 void activity6_run() {
 	struct sys_tick* systck = (struct sys_tick*) 0xE000E010;
-	printf("%lu\r\n", systck->CSR);
+	    printf("%lu\r\n", systck->CSR);
 
-	systck->RVR = 8000000;
-	systck->CSR != 1<<2;
-	systck->CSR |= 1;
+	    int time = 0;
+	    // Make a clock that counts up once a second.
+	    // Set the RVR
+	    systck->RVR = 8000000; // Set RVR to 1/10th of a second
+	    // Configure CSR to run.
+	    systck->CSR |= 1<<2;   // Use internal clock
+	    systck->CSR |= 1;      // Turn on systick timer
 
-	int time = 0;
-	int count = 0;
-	while (1) {
-		if (systck->CSR & (1<<16)) {
-			count++;
-			if (count == 10) {
-				printf("%d\r\n", time);
-			}
-			time++;
-		}
-	}
+	    // loop
+	    int count = 0;
+	    while (1) {
+	        //check if timer got to 0
+	        if (systck->CSR & (1<<16)) {
+	            count++;
+	            if (count == 10) { // Count to 10 tenths then print next second
+	                printf ("%d\r\n", time);
+	                time++;
+	                count = 0;
+	            }
+
+	        }
+	    }
 
 }
 
