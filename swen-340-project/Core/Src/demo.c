@@ -19,13 +19,13 @@
 #include "systick.h"
 
 
-// This function is to create a delay by consuming CPU cycle on counter
-static void delay_loop( int value )
-{
-	// spin loop consuming CPU to spend time.
-	for (int i = 0; i < value; i++)
-		;
-}
+//// This function is to create a delay by consuming CPU cycle on counter
+//static void delay_loop( int value )
+//{
+//	// spin loop consuming CPU to spend time.
+//	for (int i = 0; i < value; i++)
+//		;
+//}
 
 // This function is to print counter on UART port and toggle LED
 static void demo_of_UART_print(int counter){

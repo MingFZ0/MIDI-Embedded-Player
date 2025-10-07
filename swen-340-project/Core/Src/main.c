@@ -36,7 +36,7 @@ int main(void){
 //	run();
 
 	// application run function
-//	LEDOntyped();
-	run_demo() ;
+	activity7_run();
+//	run_demo() ;
 }
 

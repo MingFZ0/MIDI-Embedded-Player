@@ -25,7 +25,7 @@ void run() {
 
 	// Print out the pieces of the header one per line
 	printf("Type: %s\r\n", p_header->chunk_type);
-	printf("Length: %d\r\n", convert_to_uint32((uint8_t*) &(p_header->length)));
+	printf("Length: %lu\r\n", convert_to_uint32((uint8_t*) &(p_header->length)));
 	printf("Format: 0x%04x\r\n", convert_to_uint16((uint8_t*) &(p_header->format)));
 	printf("Num Tracks: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->ntrks)));
 	printf("Division: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->division)));
