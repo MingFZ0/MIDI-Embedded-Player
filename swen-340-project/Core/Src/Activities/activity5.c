@@ -5,10 +5,16 @@
 
 //Write a function that reads one character from the user and prints it. Run from main
 
-void read_and_print_char() {
-	uint8_t byte = USART_Read(USART2);
+uint8_t read_and_print_char() {
+	uint8_t byte = USART_Read_Non_Blocking(USART2);
+	if (byte != 0) {
+		putchar(byte);
+//		printf("%c", byte);
+	}
+	return byte;
+
 //	printf("%c\r\n", byte);
-	putchar(byte);
+
 }
 
 void run_activity5() {

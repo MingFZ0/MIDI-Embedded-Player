@@ -3,7 +3,7 @@
 
 #include "LED.h"
 #include "demo.h"
-#include "UART_NB.h"
+#include "UART.h"
 #include "activity5.h"
 #include "printf.h"
 
@@ -11,11 +11,11 @@
 
 void activity7_run() {
 	while (1) {
-		uint8_t byte = USART_Read_NonBlock(USART2);
+		uint8_t byte = USART_Read_Non_Blocking(USART2);
 		if (byte == 'o')
 			LED_On();
 		if (byte == 'f')
 			LED_Off();
-		putchar(byte);
+		if (byte != 0) {putchar(byte);}
 	}
 }
