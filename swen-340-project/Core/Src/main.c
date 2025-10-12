@@ -29,14 +29,13 @@ int main(void){
 //	int n = sprintf(buffer, "Hello, World!\r\n");
 //	USART_Write(USART2, (unsigned char *) buffer, n);
 //	run_activity5();
-
 //	activity6_run();
-
-//	run_project();
 //	run();
 
 	// application run function
-	activity7_run();
+//	activity7_run();
 //	run_demo() ;
+
+	run_project();
 }
 

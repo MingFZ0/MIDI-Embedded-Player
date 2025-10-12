@@ -10,4 +10,6 @@
 
 void run_project ();
 
+void display_menu();
+
 #endif /* INC_PROJECT_H_ */
