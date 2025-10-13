@@ -4,6 +4,7 @@
 struct sys_tick;
 void run_play();
 void run_stop();
+int run_next(int current_song);
 void run_pause(struct sys_tick* systck, int count, int time, int re_vars[]);
 
 #endif

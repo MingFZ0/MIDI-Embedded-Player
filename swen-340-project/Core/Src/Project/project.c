@@ -19,6 +19,7 @@ const int SPACE_KEY = 13;
 
 //States
 // -1 = initaization, 0 = off, 1 = on
+int current_song = -1;
 int state_pause = 0;
 int state_pause_flash = 0;
 int state_play = 0;
@@ -44,7 +45,6 @@ void clear_buffer(char *buffer, int size) {
 void display_menu() {
 //	char menu[20] = "***REMOTE LED CONTROL MENU***";
 //	char menu1[20] = "Available User Commands";
-	printf("\r\n");
 	printf("%s\r\n", "Available User Commands");
 	printf("%s\r\n", "HELP - List out available commands");
 	printf("%s\r\n", "NEXT - Show next song info");
@@ -54,29 +54,34 @@ void display_menu() {
 }
 
 void run_command(char* buffer) {
+	printf("\r\n");
 	if (strcmp(buffer, "NEXT") == 0) {
-		printf("%s\r\n", "Run NEXT");
+		current_song = run_next(current_song);
 	}
 	else if (strcmp(buffer, "HELP") == 0) {
 		display_menu();
 	}
 	else if (strcmp(buffer, "PLAY") == 0) {
+		printf("%s\r\n", "Playing...");
 		state_pause = 0;
 		state_play = 1;
 		run_play();
 	}
 	else if (strcmp(buffer, "STOP") == 0) {
+		printf("%s\r\n", "Stopping...");
 		state_play = 0;
 		state_pause = 0;
 		run_stop();
 	}
 	else if (strcmp(buffer, "PAUSE") == 0) {
+		printf("%s\r\n", "Pausing...");
 		if (state_pause == 0) {
 			state_pause = 1;
 			state_play = 0;
 		}
 	}
 	else { printf("%s\r\n", "*Invalid Command");}
+	printf("\r\n");
 }
 
 void run_project() {
