@@ -54,7 +54,6 @@ void display_menu() {
 }
 
 void run_command(char* buffer) {
-	printf("\r\n");
 	if (strcmp(buffer, "NEXT") == 0) {
 		current_song = run_next(current_song);
 	}
@@ -85,6 +84,7 @@ void run_command(char* buffer) {
 }
 
 void run_project() {
+	printf("\r\n");
 	display_menu();
 
 	//Buffer

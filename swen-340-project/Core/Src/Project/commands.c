@@ -32,7 +32,7 @@ void print_song_meta_event(unsigned char* p_song, int target_byte) {
 	unsigned char* ptr = skip_to_byte(p_song, target_byte);
 
 	if (ptr == 0) {
-		printf("%s", "N/A");
+		printf("%s\n", "N/A");
 		return;
 	}
 
