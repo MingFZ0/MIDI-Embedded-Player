@@ -1,6 +1,8 @@
 #include "printf.h"
 #include "LED.h"
 #include "song.h"
+#include "convert_to_uint32.h"
+#include "convert_to_uint16.h"
 
 struct sys_tick {
 	uint32_t CSR;
@@ -32,15 +34,39 @@ void print_song_meta_event(unsigned char* p_song, int target_byte) {
 	unsigned char* ptr = skip_to_byte(p_song, target_byte);
 
 	if (ptr == 0) {
-		printf("%s\n", "N/A");
+		printf("%s\r\n", "N/A");
 		return;
 	}
 
 	while (1) {
-		if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z') || (*ptr == 32)) {putchar(*ptr);}
+		if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z') || (*ptr == ' ')) {putchar(*ptr);}
 		if (*ptr == '\0' || *ptr == 255) {break;}
 		ptr++;
 	}
+	printf("\r\n");
+}
+
+void print_song_tempo(unsigned char* p_song) {
+	unsigned char* ptr = skip_to_byte(p_song, 81);
+
+	if (ptr == 0) {
+		printf("%s\n", "N/A");
+		return;
+	} else {
+		ptr++;
+		if (*ptr != 3) {
+			printf("%s\n", "N/A");
+			return;
+		}
+		ptr++;
+	}
+
+	//0x09,0xa3,0x19
+	uint32_t value1 = ptr[0] << (2*8);	// 0x 09 00 00
+	uint32_t value2 = ptr[1] << (1*8);  // 0x 00 a3 00
+	uint32_t value3 = ptr[2];			// 0x 00 00 19
+	uint32_t value4 = value1 + value2 + value3;
+	printf("%lu", value4);
 	printf("\r\n");
 }
 
@@ -57,10 +83,18 @@ int run_next(int current_song) {
 	if (next_song_index > 4) {next_song_index = 0;}
 	song song = get_song(next_song_index);
 	printf("Song Index: %d\r\n", next_song_index);
+
+	unsigned char* ptr = song.p_song;
 	printf("%s", "Title: ");
-	print_song_meta_event(song.p_song, 3);
+	print_song_meta_event(ptr, 3);
+
+	ptr = song.p_song;
 	printf("%s", "Copyright: ");
-	print_song_meta_event(song.p_song, 2);
+	print_song_meta_event(ptr, 2);
+
+	ptr = song.p_song;
+	printf("%s", "Tempo: ");
+	print_song_tempo(ptr);
 	return next_song_index;
 }
 

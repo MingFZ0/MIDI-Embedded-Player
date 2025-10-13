@@ -86,6 +86,7 @@ void run_command(char* buffer) {
 void run_project() {
 	printf("\r\n");
 	display_menu();
+	printf("\r\n");
 
 	//Buffer
 	char buffer[10];
