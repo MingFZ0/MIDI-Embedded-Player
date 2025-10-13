@@ -20,6 +20,15 @@ int puts(const char* string) {
 	return ret + 1;
 }
 
+void print_ch_arr(const char* arr) {
+	int length = strlen(arr);
+	for (int i = 0; i <= length; i++) {
+//		putchar(*arr);
+		printf("%c\r\n", *arr);
+		arr++;
+	}
+}
+
 int printf(const char *format, ...) {
 	va_list aptr;
 	int ret;
