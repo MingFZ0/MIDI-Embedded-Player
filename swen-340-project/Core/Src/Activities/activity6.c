@@ -35,7 +35,6 @@ void activity6_run() {
 	                time++;
 	                count = 0;
 	            }
-
 	        }
 	    }
 
