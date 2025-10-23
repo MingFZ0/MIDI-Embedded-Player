@@ -13,6 +13,7 @@
 #include "activity5.h"
 #include "activity6.h"
 #include "activity7.h"
+#include "activity9.h"
 
 #include <stdio.h>
 
@@ -36,6 +37,7 @@ int main(void){
 //	activity7_run();
 //	run_demo() ;
 
-	run_project();
+	blue_button();
+//	run_project();
 }
 
