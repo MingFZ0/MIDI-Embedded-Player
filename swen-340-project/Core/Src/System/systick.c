@@ -20,12 +20,14 @@ void init_systick()
 	//
 	// Disable SysTick by clearing the CTRL (CSR) register.
 	systck->CSR = 0;
-	// Set the LOAD (RVR) to 8 million to give us a 100 milliseconds timer.
-	systck->RVR = 8000000;
+	// Set the LOAD (RVR) to 8 million to give us a 100 milliseconds timer.	| 1ms rollover
+	systck->RVR = 78124;
 	// Set the clock source bit in the CTRL (CSR) to the internal clock.
 	systck->CSR |= 1<<2;
 	// Set the enable bit in the CTRL (CSR) to start the timer.
 	systck->CSR |= 1;
+	// Enable interrupt
+	systck->CSR |= 1<<1;
 
 }
 

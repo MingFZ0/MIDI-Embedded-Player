@@ -1,0 +1,25 @@
+//Create a clock that prints once a second using interrupts
+//Steps:
+//	Configure Systick handler for interrupts
+//	Write interrupt handler
+// 	Print every second
+
+#include "systick.h"
+#include "printf.h"
+
+static int count = 0;
+
+void SysTick_Handler() {
+	count++;
+}
+
+void activity10_run() {
+	printf("r\n");
+	init_systick();
+
+	while (1) {
+		if (!(count & 1023)) {
+				printf("%d\r", count >> 10);
+			}
+	}
+}

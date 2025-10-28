@@ -13,8 +13,11 @@ void blue_button() {
 	GPIO_Init();
 
 	while (1) {
-		if (GPIOA->IDR == 1) {
-			printf("Pressed");
+		if (B1_GPIO_Port->IDR & B1_Pin) {
+			printf("off\r\n");
+		}
+		else {
+			printf("on\r\n");
 		}
 	}
 }
