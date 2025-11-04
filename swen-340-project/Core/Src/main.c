@@ -16,6 +16,9 @@
 #include "activity9.h"
 #include "activity10.h"
 
+#include "homework6.h"
+
+
 #include <stdio.h>
 
 #include <stdarg.h>
@@ -39,8 +42,9 @@ int main(void){
 //	run_demo() ;
 
 //	blue_button();
+	homework6_run();
 //	run_project();
 
-	activity10_run();
+//	activity10_run();
 }
 
