@@ -90,21 +90,24 @@ void run_command(char* buffer) {
 	printf("\r\n");
 }
 
+void project_init() {
+	//Buffer
+	clear_buffer(BUFFER, 10);
+
+	//Timer
+	SYSTCK->RVR = 8000000;
+	SYSTCK->CSR |= 1<<2;
+	SYSTCK->CSR |= 1;
+}
+
 void run_project() {
+
+	project_init();
+
 	printf("\r\n");
 	display_menu();
 	printf("\r\n");
 
-	//Buffer
-
-	clear_buffer(BUFFER, 10);
-
-	//Timer
-
-
-	SYSTCK->RVR = 8000000;
-	SYSTCK->CSR |= 1<<2;
-	SYSTCK->CSR |= 1;
 
 	while (1) {
 		if (STATE_PAUSE == 1) {
