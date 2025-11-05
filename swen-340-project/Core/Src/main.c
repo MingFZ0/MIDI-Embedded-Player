@@ -42,8 +42,9 @@ int main(void){
 //	run_demo() ;
 
 //	blue_button();
-	homework6_run();
-//	run_project();
+//	blue_button_interrupt();
+//	homework6_run();
+	run_project();
 
 //	activity10_run();
 }

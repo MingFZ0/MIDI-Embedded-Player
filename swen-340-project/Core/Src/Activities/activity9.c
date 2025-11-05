@@ -13,18 +13,28 @@ void blue_button() {
 	GPIO_Init();
 
 	while (1) {
-//		if (B1_GPIO_Port->IDR & B1_Pin) {
-//			printf("off\r\n");
-//		}
-//		else {
-//			printf("on\r\n");
-//		}
-
-		if (S1_GPIO_Port->IDR & S1_Pin) {
+		if (B1_GPIO_Port->IDR & B1_Pin) {
 			printf("off\r\n");
 		}
 		else {
 			printf("on\r\n");
 		}
+
 	}
 }
+
+void EXTI15_10_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
+	printf("%s\r\n", "Pressed");
+}
+
+void EXTI9_5_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
+	printf("%s\r\n", "Small Button Pressed");
+}
+
+void blue_button_interrupt() {
+	GPIO_Init();
+}
+
+

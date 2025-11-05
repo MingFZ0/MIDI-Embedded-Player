@@ -35,15 +35,17 @@ void GPIO_Init(void)
 
 	GPIO_InitStruct.Pin = S1_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
 	HAL_GPIO_Init(S1_GPIO_Port, &GPIO_InitStruct);
 
 	/* EXTI15_10_IRQn interrupt init*/
+	NVIC_EnableIRQ(EXTI15_10_IRQn);
 	// Note you will have to add EXTI15_10_IRQn Interrupt handler function as well
 	// This is the interrupt handler for the blue button
 
 
 	/* EXTI9_5_IRQn interrupt init*/
+	NVIC_EnableIRQ(EXTI9_5_IRQn);
 	// Note you will have to add EXTI9_15_IRQn Interrupt handler function as well
 	// This is the interrupt handler for the external buttons (S1)
 }

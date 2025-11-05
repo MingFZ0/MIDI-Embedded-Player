@@ -24,6 +24,7 @@ int state_pause = 0;
 int state_pause_flash = 0;
 int state_play = 0;
 
+static int REMOTE_MODE = 1;
 
 struct sys_tick {
 	uint32_t CSR;
@@ -100,7 +101,6 @@ void run_project() {
 	systck->RVR = 8000000;
 	systck->CSR |= 1<<2;
 	systck->CSR |= 1;
-
 
 	while (1) {
 		if (state_pause == 1) {
