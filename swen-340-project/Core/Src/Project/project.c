@@ -19,12 +19,18 @@ const int SPACE_KEY = 13;
 
 //States
 // -1 = initaization, 0 = off, 1 = on
-int current_song = -1;
-int state_pause = 0;
-int state_pause_flash = 0;
-int state_play = 0;
+static int CURRENT_SONG = -1;
+static int STATE_PAUSE = 0;
+static int STATE_PLAY = 0;
 
-static int REMOTE_MODE = 1;
+static struct sys_tick* SYSTCK = (struct sys_tick*) 0xE000E010;
+static int TIMER_COUNT = 0;
+static int TIME = 0;
+
+static char BUFFER[10];
+static int BUFFER_INDEX = 0;
+
+//static int REMOTE_MODE = 1;
 
 struct sys_tick {
 	uint32_t CSR;
@@ -56,28 +62,28 @@ void display_menu() {
 
 void run_command(char* buffer) {
 	if (strcmp(buffer, "NEXT") == 0) {
-		current_song = run_next(current_song);
+		CURRENT_SONG = run_next(CURRENT_SONG);
 	}
 	else if (strcmp(buffer, "HELP") == 0) {
 		display_menu();
 	}
 	else if (strcmp(buffer, "PLAY") == 0) {
 		printf("%s\r\n", "Playing...");
-		state_pause = 0;
-		state_play = 1;
+		STATE_PAUSE = 0;
+		STATE_PLAY = 1;
 		run_play();
 	}
 	else if (strcmp(buffer, "STOP") == 0) {
 		printf("%s\r\n", "Stopping...");
-		state_play = 0;
-		state_pause = 0;
+		STATE_PLAY = 0;
+		STATE_PAUSE = 0;
 		run_stop();
 	}
 	else if (strcmp(buffer, "PAUSE") == 0) {
 		printf("%s\r\n", "Pausing...");
-		if (state_pause == 0) {
-			state_pause = 1;
-			state_play = 0;
+		if (STATE_PAUSE == 0) {
+			STATE_PAUSE = 1;
+			STATE_PLAY = 0;
 		}
 	}
 	else { printf("%s\r\n", "*Invalid Command");}
@@ -90,41 +96,39 @@ void run_project() {
 	printf("\r\n");
 
 	//Buffer
-	char buffer[10];
-	int buffer_index = 0;
-	clear_buffer(buffer, 10);
+
+	clear_buffer(BUFFER, 10);
 
 	//Timer
-	struct sys_tick* systck = (struct sys_tick*) 0xE000E010;
-	int timer_count = 0;
-	int time = 0;
-	systck->RVR = 8000000;
-	systck->CSR |= 1<<2;
-	systck->CSR |= 1;
+
+
+	SYSTCK->RVR = 8000000;
+	SYSTCK->CSR |= 1<<2;
+	SYSTCK->CSR |= 1;
 
 	while (1) {
-		if (state_pause == 1) {
+		if (STATE_PAUSE == 1) {
 			int re_vars[2] = {0,0};
-			run_pause(systck, timer_count, time, re_vars);
-			timer_count = re_vars[0];
-			time = re_vars[1];
+			run_pause(SYSTCK, TIMER_COUNT, TIME, re_vars);
+			TIMER_COUNT = re_vars[0];
+			TIME = re_vars[1];
 		}
 
 		uint8_t byte = USART_Read_Non_Blocking(USART2);
 		if (byte == 0) {continue;}
 		putchar(byte);
 
-		if (buffer_index < 10) {
-			buffer[buffer_index] = (char) byte;
-			buffer_index++;
+		if (BUFFER_INDEX < 10) {
+			BUFFER[BUFFER_INDEX] = (char) byte;
+			BUFFER_INDEX++;
 		}
 
 		if (byte == SPACE_KEY) {
-			buffer[buffer_index-1] = '\0';
+			BUFFER[BUFFER_INDEX-1] = '\0';
 			//printf("	Buffer Before Cleaning: %s\r\n", buffer);
-			run_command(buffer);
-			clear_buffer(buffer, 10);
-			buffer_index = 0;
+			run_command(BUFFER);
+			clear_buffer(BUFFER, 10);
+			BUFFER_INDEX = 0;
 			//printf("	Buffer after Cleaning: %s\r\n", buffer);
 		}
 
