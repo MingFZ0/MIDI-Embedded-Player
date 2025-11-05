@@ -12,17 +12,17 @@
 #include "commands.h"
 #include <string.h>
 
-#include "project.h"
+#include "project_util.h"
 
-const int SPACE_KEY = 13;
 //const int SPECIAL_KEY = 27;
+const int SPACE_KEY = 13;
 
 //States
-// -1 = initaization, 0 = off, 1 = on
-static int CURRENT_SONG = -1;
+static int CURRENT_SONG = -1;	// 	-1 = initialization | 0 = off | 1 = on
 static int STATE_PAUSE = 0;
 static int STATE_PLAY = 0;
 
+//Project Vars
 static struct sys_tick* SYSTCK = (struct sys_tick*) 0xE000E010;
 static int TIMER_COUNT = 0;
 static int TIME = 0;
@@ -39,56 +39,21 @@ struct sys_tick {
 	uint32_t CALIB;
 };
 
-void clear_buffer(char *buffer, int size) {
-	for (int index = 0; index < size; index++) {
-		//printf("	Replacement Before: %c\r\n", *buffer);
-		*buffer = 0;
-		//printf("	Replacement After: %c\r\n", *buffer);
-		buffer++;
-	}
-	size = 0;
+void set_state_pause() {
+	STATE_PAUSE = 1;
+	STATE_PLAY = 0;
+}
+void set_state_play() {
+	STATE_PAUSE = 0;
+	STATE_PLAY = 1;
+}
+void set_state_clear() {
+	STATE_PAUSE = 0;
+	STATE_PLAY = 0;
 }
 
-void display_menu() {
-//	char menu[20] = "***REMOTE LED CONTROL MENU***";
-//	char menu1[20] = "Available User Commands";
-	printf("%s\r\n", "Available User Commands");
-	printf("%s\r\n", "HELP - List out available commands");
-	printf("%s\r\n", "NEXT - Show next song info");
-	printf("%s\r\n", "PLAY - Play the song (Led On)");
-	printf("%s\r\n", "PAUSE - Pause the song (Led flash)");
-	printf("%s\r\n", "STOP - Stop the song (Led off)");
-}
-
-void run_command(char* buffer) {
-	if (strcmp(buffer, "NEXT") == 0) {
-		CURRENT_SONG = run_next(CURRENT_SONG);
-	}
-	else if (strcmp(buffer, "HELP") == 0) {
-		display_menu();
-	}
-	else if (strcmp(buffer, "PLAY") == 0) {
-		printf("%s\r\n", "Playing...");
-		STATE_PAUSE = 0;
-		STATE_PLAY = 1;
-		run_play();
-	}
-	else if (strcmp(buffer, "STOP") == 0) {
-		printf("%s\r\n", "Stopping...");
-		STATE_PLAY = 0;
-		STATE_PAUSE = 0;
-		run_stop();
-	}
-	else if (strcmp(buffer, "PAUSE") == 0) {
-		printf("%s\r\n", "Pausing...");
-		if (STATE_PAUSE == 0) {
-			STATE_PAUSE = 1;
-			STATE_PLAY = 0;
-		}
-	}
-	else { printf("%s\r\n", "*Invalid Command");}
-	printf("\r\n");
-}
+void set_current_song(int song) {CURRENT_SONG = song;}
+int get_current_song() {return CURRENT_SONG;}
 
 void project_init() {
 	//Buffer
@@ -137,7 +102,3 @@ void run_project() {
 
 	}
 }
-
-
-
-
