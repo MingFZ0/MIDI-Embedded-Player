@@ -97,6 +97,8 @@ void small_button_check() {
 		SM_BTN_HELD_TIME = timestamp_diff(SM_BTN_DOWN_TIMESTAMP, SM_BTN_UP_TIMESTAMP);
 
 //		printf("		Button Up at: %d, %d\r\n", SM_BTN_UP_TIMESTAMP[0], SM_BTN_UP_TIMESTAMP[1]);
+//		printf("		Button Down at: %d, %d\r\n", SM_BTN_DOWN_TIMESTAMP[0], SM_BTN_DOWN_TIMESTAMP[1]);
+
 //		printf("		Button Held For: %d\r\n", SM_BTN_DOWN_TIMESTAMP);
 
 		if (SM_BTN_HELD_TIME >= 10) {
@@ -154,10 +156,10 @@ void run_remote_op() {
 }
 
 void run_local_op() {
-
 	time_countdown(SYSTCK, TIMER);
 	if (timestamp_diff(SM_BTN_DOWN_TIMESTAMP,TIMER) > 11 && SM_BTN_PRESSED == 0) {
 //		printf("%s\r\n", "Stop Listening for second button");
+//		printf("%d, %d\r\n", SM_BTN_DOWN_TIMESTAMP[0], SM_BTN_DOWN_TIMESTAMP[1]);
 		SM_BTN_DOWN_TIMESTAMP[0] = 0;
 		SM_BTN_DOWN_TIMESTAMP[1] = 0;
 //		TIMER[0] = 0;

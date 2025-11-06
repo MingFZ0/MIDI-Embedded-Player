@@ -32,27 +32,27 @@ void display_menu() {
 }
 
 void run_local_cmd(int state) {
-	printf("Playing State: %d\r\n", state);
-//	if (state == 1) {
-//		if (get_pause_state() == 0) {
-//			printf("%s\r\n", "Pausing...");
-//			set_state_pause();
-//		}
-//		else {
-//			printf("%s\r\n", "Playing...");
-//			set_state_play();
-//			run_play();
-//		}
-//	}
-//	else if (state == 2) {
-//		int new_song = run_next(get_current_song());
-//		set_current_song(new_song);
-//	}
-//	else if (state == 3) {
-//		printf("%s\r\n", "Stopping...");
-//		set_state_clear();
-//		run_stop();
-//	}
+//	printf("Playing State: %d\r\n", state);
+	if (state == 1) {
+		if (get_pause_state() == 1) {
+			printf("%s\r\n", "Playing...");
+			set_state_play();
+			run_play();
+		}
+		else {
+			printf("%s\r\n", "Pausing...");
+			set_state_pause();
+		}
+	}
+	else if (state == 2) {
+		int new_song = run_next(get_current_song());
+		set_current_song(new_song);
+	}
+	else if (state == 3) {
+		printf("%s\r\n", "Stopping...");
+		set_state_clear();
+		run_stop();
+	}
 }
 
 void run_command(char* buffer) {
