@@ -34,8 +34,9 @@ static char BUFFER[10];
 static int BUFFER_INDEX = 0;
 
 static int SM_BTN_PRESSED = 0;
-static int SM_BTN_PRESSED_TIMER_COUNT = 0;
-static int SM_BTN_PRESSED_TIME = 0;
+static int SM_BTN_PRESSED_MOMENT = 0;
+static int SM_BTN_PRESSED_COUNT = 0;
+
 
 struct sys_tick {
 	uint32_t CSR;
@@ -56,18 +57,17 @@ void flip_operation_mode() {
 }
 
 void small_button_check() {
-	if (SM_BTN_PRESSED == 0 && TIME == 0 && TIMER_COUNT == 0) {
-		SM_BTN_PRESSED = 1;
-		SM_BTN_PRESSED_TIMER_COUNT = TIMER_COUNT;
-		SM_BTN_PRESSED_TIME = TIME;
-		printf("Init Timer Count: %d | Init Time: %d\r\n", TIMER_COUNT, TIME);
-	}
-	else if (SM_BTN_PRESSED == 1 && TIMER_COUNT > SM_BTN_PRESSED_TIMER_COUNT) {
-		SM_BTN_PRESSED = 0;
-		printf("Final Timer Count: %d | Final Time: %d\r\n", TIMER_COUNT, TIME);
-	}
+//	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_COUNT == 0) {
+//		SM_BTN_PRESSED = 1;
+//		printf("Init Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+//	}
+//	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_COUNT > 0) {
+//		SM_BTN_PRESSED = 0;
+//		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_COUNT;
+//		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+//	}
 //
-//	printf("Pressed\r\n");
+	printf("Pressed\r\n");
 }
 
 int get_current_mode() {return REMOTE_MODE;}
@@ -121,20 +121,14 @@ void run_project() {
 
 	while (1) {
 
-		if ((SM_BTN_PRESSED == 1) || (TIME > 0) || (TIMER_COUNT > 0)) {
-			int re_vars[2] = {0,0};
-			time_countdown(SYSTCK, TIMER_COUNT, TIME, re_vars);
-			TIMER_COUNT = re_vars[0];
-			TIME = re_vars[1];
+		if (SM_BTN_PRESSED == 1 || SM_BTN_PRESSED_COUNT > 0) {
+			SM_BTN_PRESSED_COUNT++;
+			printf("%d\r\n", SM_BTN_PRESSED_COUNT);
 
-			printf("%d | %d\r\n", TIME, TIMER_COUNT);
-
-//			if () {
-//				SM_BTN_PRESSED_TIME = 0;
-//				SM_BTN_PRESSED_TIMER_COUNT = 0;
-//				TIMER_COUNT = 0;
-//				TIME = 0;
-//			}
+			if (SM_BTN_PRESSED == 0 && (SM_BTN_PRESSED_COUNT> SM_BTN_PRESSED_MOMENT + 2)) {
+				SM_BTN_PRESSED_COUNT = 0;
+				SM_BTN_PRESSED_MOMENT = 0;
+			}
 		}
 
 		if (STATE_PAUSE == 1) {
