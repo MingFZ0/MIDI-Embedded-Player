@@ -35,8 +35,11 @@ static int BUFFER_INDEX = 0;
 
 static int SM_BTN_PRESSED = 0;
 static int SM_BTN_PRESSED_MOMENT = 0;
-static int SM_BTN_PRESSED_TIME = 0;
 static int SM_BTN_PRESSED_ITERATOR = 0;
+
+static int SM_BTN_HELD_TIME[2] = {0,0};
+static int SM_BTN_LAST_RELEASE[2] = {0,0};
+
 
 
 struct sys_tick {
@@ -58,14 +61,18 @@ void flip_operation_mode() {
 }
 
 void small_button_check() {
+	if (REMOTE_MODE == 1) {return;}
 	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_ITERATOR == 0) {
 		SM_BTN_PRESSED = 1;
-		printf("Init Count: %d\r\n", SM_BTN_PRESSED_ITERATOR);
+		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
 	}
 	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_ITERATOR > 0) {
-		SM_BTN_PRESSED = 0;
+		SM_BTN_PRESSED = 2;
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
-		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_ITERATOR);
+		printf("Button Held For: %d | %d\r\n", SM_BTN_HELD_TIME[0], SM_BTN_HELD_TIME[1]);
+		SM_BTN_HELD_TIME[0] = 0;
+		SM_BTN_HELD_TIME[1] = 0;
+		SM_BTN_LAST_RELEASE[1] = 1;
 	}
 }
 
@@ -84,7 +91,7 @@ void project_init() {
 	clear_buffer(BUFFER, 10);
 
 	//Timer
-	SYSTCK->RVR = 8000000;
+	SYSTCK->RVR = 8000000 - 1;
 	SYSTCK->CSR |= 1<<2;
 	SYSTCK->CSR |= 1;
 }
@@ -116,17 +123,25 @@ void run_remote_op() {
 }
 
 void run_local_op() {
-	if (SM_BTN_PRESSED == 1 || SM_BTN_PRESSED_ITERATOR > 0) {
+
+	if (SM_BTN_LAST_RELEASE[0] > 0) {
+		printf("%s\r\n", "Stop Listening for second button");
+		SM_BTN_LAST_RELEASE[0] = 0;
+		SM_BTN_LAST_RELEASE[1] = 0;
+	}
+	if (SM_BTN_LAST_RELEASE[1] > 0 || SM_BTN_LAST_RELEASE[0] > 0) {
+		time_countdown(SYSTCK, SM_BTN_LAST_RELEASE);
+	}
+
+	if (SM_BTN_PRESSED > 0 || SM_BTN_PRESSED_ITERATOR > 0) {
 
 		SM_BTN_PRESSED_ITERATOR++;
-		int re_vars[2] = {0,0};
-		time_countdown(SYSTCK, TIMER_COUNT, TIME, re_vars);
-		TIMER_COUNT = re_vars[0];
-		TIME = re_vars[1];
+		time_countdown(SYSTCK, SM_BTN_HELD_TIME);
 
-		if (SM_BTN_PRESSED == 0 && (SM_BTN_PRESSED_ITERATOR> SM_BTN_PRESSED_MOMENT + 2)) {
+		if (SM_BTN_PRESSED == 2 && (SM_BTN_PRESSED_ITERATOR > (SM_BTN_PRESSED_MOMENT + 1))) {
+			SM_BTN_PRESSED = 0;
 			SM_BTN_PRESSED_ITERATOR = 0;
-			SM_BTN_PRESSED_MOMENT = 0;
+			printf("Last Button Pressed: %d\r\n", TIME);
 		}
 	}
 

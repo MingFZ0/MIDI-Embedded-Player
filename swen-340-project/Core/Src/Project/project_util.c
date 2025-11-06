@@ -56,19 +56,14 @@ void run_command(char* buffer) {
 	printf("\r\n");
 }
 
-void time_countdown(struct sys_tick* systck, int count, int time, int re_vars[]) {
-	int re_count = count;
-	int re_time = time;
+void time_countdown(struct sys_tick* systck, int time_vars[]) {
 	if (systck->CSR & (1<<16)) {
-		re_count++;
-		printf("Second: %d | %d\r\n", re_time, re_count);
-		if (re_count == 10) { // Count to 10 tenths then print next second
-			re_time++;
-			re_count = 0;
+		time_vars[1]++;
+		if (time_vars[1] == 10) { // Count to 10 tenths then print next second
+			time_vars[0]++;
+			time_vars[1] = 0;
 		}
 	}
-	re_vars[0] = re_count;
-	re_vars[1] = re_time;
 	return;
 }
 
