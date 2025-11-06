@@ -35,7 +35,8 @@ static int BUFFER_INDEX = 0;
 
 static int SM_BTN_PRESSED = 0;
 static int SM_BTN_PRESSED_MOMENT = 0;
-static int SM_BTN_PRESSED_COUNT = 0;
+static int SM_BTN_PRESSED_TIME = 0;
+static int SM_BTN_PRESSED_ITERATOR = 0;
 
 
 struct sys_tick {
@@ -57,17 +58,15 @@ void flip_operation_mode() {
 }
 
 void small_button_check() {
-	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_COUNT == 0) {
+	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_ITERATOR == 0) {
 		SM_BTN_PRESSED = 1;
-		printf("Init Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+		printf("Init Count: %d\r\n", SM_BTN_PRESSED_ITERATOR);
 	}
-	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_COUNT > 0) {
+	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_ITERATOR > 0) {
 		SM_BTN_PRESSED = 0;
-		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_COUNT;
-		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
+		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_ITERATOR);
 	}
-
-//	printf("Pressed\r\n");
 }
 
 int get_current_mode() {return REMOTE_MODE;}
@@ -90,7 +89,17 @@ void project_init() {
 	SYSTCK->CSR |= 1;
 }
 
-void run_remote_op(uint8_t byte) {
+void run_remote_op() {
+
+	if (STATE_PAUSE == 1) {
+		int re_vars[2] = {0,0};
+		run_pause(SYSTCK, TIMER_COUNT, TIME, re_vars);
+		TIMER_COUNT = re_vars[0];
+		TIME = re_vars[1];
+	}
+
+	uint8_t byte = USART_Read_Non_Blocking(USART2);
+	if (byte == 0) {return;}
 	putchar(byte);
 
 	if (BUFFER_INDEX < 10) {
@@ -107,7 +116,22 @@ void run_remote_op(uint8_t byte) {
 }
 
 void run_local_op() {
+	if (SM_BTN_PRESSED == 1 || SM_BTN_PRESSED_ITERATOR > 0) {
 
+		SM_BTN_PRESSED_ITERATOR++;
+		int re_vars[2] = {0,0};
+		time_countdown(SYSTCK, TIMER_COUNT, TIME, re_vars);
+		TIMER_COUNT = re_vars[0];
+		TIME = re_vars[1];
+
+		if (SM_BTN_PRESSED == 0 && (SM_BTN_PRESSED_ITERATOR> SM_BTN_PRESSED_MOMENT + 2)) {
+			SM_BTN_PRESSED_ITERATOR = 0;
+			SM_BTN_PRESSED_MOMENT = 0;
+		}
+	}
+
+	//Clear the USART Reading
+	USART_Read_Non_Blocking(USART2);
 }
 
 void run_project() {
@@ -121,27 +145,8 @@ void run_project() {
 
 	while (1) {
 
-		if (SM_BTN_PRESSED == 1 || SM_BTN_PRESSED_COUNT > 0) {
-			SM_BTN_PRESSED_COUNT++;
-			printf("%d\r\n", SM_BTN_PRESSED_COUNT);
-
-			if (SM_BTN_PRESSED == 0 && (SM_BTN_PRESSED_COUNT> SM_BTN_PRESSED_MOMENT + 2)) {
-				SM_BTN_PRESSED_COUNT = 0;
-				SM_BTN_PRESSED_MOMENT = 0;
-			}
-		}
-
-		if (STATE_PAUSE == 1) {
-			int re_vars[2] = {0,0};
-			run_pause(SYSTCK, TIMER_COUNT, TIME, re_vars);
-			TIMER_COUNT = re_vars[0];
-			TIME = re_vars[1];
-		}
-
-		uint8_t byte = USART_Read_Non_Blocking(USART2);
-		if (byte == 0) {continue;}
 		if (REMOTE_MODE == 1) {
-			run_remote_op(byte);
+			run_remote_op();
 		}
 		else {run_local_op();}
 	}
