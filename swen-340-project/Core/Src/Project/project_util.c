@@ -10,6 +10,11 @@
 #include "LED.h"
 #include <string.h>
 
+/**
+ * This method clears the buffer that is passed in
+ * Parameter: char *buffer, int size
+ * Return: void
+ */
 void clear_buffer(char *buffer, int size) {
 	for (int index = 0; index < size; index++) {
 		//printf("	Replacement Before: %c\r\n", *buffer);
@@ -20,6 +25,11 @@ void clear_buffer(char *buffer, int size) {
 	size = 0;
 }
 
+/**
+ *  Displays the menu
+ *  Parameter: None
+ *  Return: void
+ */
 void display_menu() {
 //	char menu[20] = "***REMOTE LED CONTROL MENU***";
 //	char menu1[20] = "Available User Commands";
@@ -31,6 +41,11 @@ void display_menu() {
 	printf("%s\r\n", "STOP - Stop the song (Led off)");
 }
 
+/**
+ * Runs the local command based on the state passed in
+ * Parameter: int state | 1 = play/pause ; 2 = next ; 3 = stop
+ * Return: void
+ */
 void run_local_cmd(int state) {
 //	printf("Playing State: %d\r\n", state);
 	if (state == 1) {
@@ -55,6 +70,11 @@ void run_local_cmd(int state) {
 	}
 }
 
+/**
+ * Runs the remote commands based on the buffer passed in
+ * Paramter: char* buffer
+ * Return: void
+ */
 void run_command(char* buffer) {
 	if (strcmp(buffer, "NEXT") == 0) {
 		int new_song = run_next(get_current_song());
@@ -81,6 +101,12 @@ void run_command(char* buffer) {
 	printf("\r\n");
 }
 
+/**
+ * A condensed & updated version of run_pause in the commands.c file
+ * Runs a countdown using systck and displays the led based on the state
+ * Parameter: struct sys_tick* systck, int time_vars[]	| time_vars is a 2d array consist of {time, time_count} which corrsponds to {second, 10th of a second}
+ * Return: void -> the values are modified and saved in the time_vars
+ */
 void time_countdown(struct sys_tick* systck, int time_vars[]) {
 	if (systck->CSR & (1<<16)) {
 		time_vars[1]++;
@@ -100,11 +126,17 @@ void time_countdown(struct sys_tick* systck, int time_vars[]) {
 	return;
 }
 
+/**
+ * Handler for the blue button
+ */
 void EXTI15_10_IRQHandler(void) {
 	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
 	flip_operation_mode();
 }
 
+/**
+ * Handler for the small button
+ */
 void EXTI9_5_IRQHandler(void) {
 	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
 	small_button_check();
