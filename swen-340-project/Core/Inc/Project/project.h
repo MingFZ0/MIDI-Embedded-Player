@@ -26,6 +26,7 @@ void set_state_clear();
 void set_current_song(int song);
 int get_current_song();
 
+void small_button_check();
 void run_project ();
 void display_menu();
 

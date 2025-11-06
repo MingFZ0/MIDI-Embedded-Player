@@ -27,8 +27,10 @@ static int STATE_PLAY = 0;
 
 //Project Vars
 static struct sys_tick* SYSTCK = (struct sys_tick*) 0xE000E010;
-static int TIMER_COUNT = 0;
-static int TIME = 0;
+//static int TIMER_COUNT = 0;
+//static int TIME = 0;
+
+static int TIMER[2] = {0,0};
 
 static char BUFFER[10];
 static int BUFFER_INDEX = 0;
@@ -37,9 +39,12 @@ static int SM_BTN_PRESSED = 0;
 static int SM_BTN_PRESSED_MOMENT = 0;
 static int SM_BTN_PRESSED_ITERATOR = 0;
 
-static int SM_BTN_HELD_TIME[2] = {0,0};
-static int SM_BTN_LAST_RELEASE[2] = {0,0};
+static int SM_BTN_DOWN_TIMESTAMP[2] = {0,0};
+static int SM_BTN_UP_TIMESTAMP[2] = {0,0};
 
+static int SM_BTN_HELD_TIME = 0;
+
+static int LOCAL_MODE_BIN_CONTROL = 0;	// 1 = play/pause	| 2 = next	| 3 = stop
 
 
 struct sys_tick {
@@ -60,21 +65,49 @@ void flip_operation_mode() {
 	}
 }
 
+void record_timestamp(int time_stamp[2], int timer[2]) {
+	time_stamp[0] = timer[0];
+	time_stamp[1] = timer[1];
+}
+int timestamp_diff(int timestamp1[2], int timestamp2[2]) {
+	int stamp1_count = (timestamp1[0] * 10) + (timestamp1[1]);
+	int stamp2_count = (timestamp2[0] * 10) + (timestamp2[1]);
+	int result = stamp2_count - stamp1_count;
+//	if (result > 10) {printf("%d - %d = %d\r\n", stamp2_count, stamp1_count, result);}
+	return result;
+}
+
 void small_button_check() {
 	if (REMOTE_MODE == 1) {return;}
 	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_ITERATOR == 0) {
+
+		if (LOCAL_MODE_BIN_CONTROL == 0) {LOCAL_MODE_BIN_CONTROL = 1;}
+		else if (LOCAL_MODE_BIN_CONTROL == 1) {LOCAL_MODE_BIN_CONTROL = 2;}
+
 		SM_BTN_PRESSED = 1;
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
+		record_timestamp(SM_BTN_DOWN_TIMESTAMP, TIMER);
+		SM_BTN_DOWN_TIMESTAMP[1]++;
+//		printf("		Button Down at: %d, %d\r\n", SM_BTN_DOWN_TIMESTAMP[0], SM_BTN_DOWN_TIMESTAMP[1]);
 	}
 	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_ITERATOR > 0) {
 		SM_BTN_PRESSED = 2;
+		record_timestamp(SM_BTN_UP_TIMESTAMP, TIMER);
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
-		printf("Button Held For: %d | %d\r\n", SM_BTN_HELD_TIME[0], SM_BTN_HELD_TIME[1]);
-		SM_BTN_HELD_TIME[0] = 0;
-		SM_BTN_HELD_TIME[1] = 0;
-		SM_BTN_LAST_RELEASE[1] = 1;
+		SM_BTN_HELD_TIME = timestamp_diff(SM_BTN_DOWN_TIMESTAMP, SM_BTN_UP_TIMESTAMP);
+
+//		printf("		Button Up at: %d, %d\r\n", SM_BTN_UP_TIMESTAMP[0], SM_BTN_UP_TIMESTAMP[1]);
+//		printf("		Button Held For: %d\r\n", SM_BTN_DOWN_TIMESTAMP);
+
+		if (SM_BTN_HELD_TIME >= 10) {
+			LOCAL_MODE_BIN_CONTROL = 3;
+		}
+
+
 	}
 }
+
+
 
 int get_current_mode() {return REMOTE_MODE;}
 int get_pause_state() {return STATE_PAUSE;}
@@ -100,10 +133,7 @@ void project_init() {
 void run_remote_op() {
 
 	if (STATE_PAUSE == 1) {
-		int re_vars[2] = {0,0};
-		run_pause(SYSTCK, TIMER_COUNT, TIME, re_vars);
-		TIMER_COUNT = re_vars[0];
-		TIME = re_vars[1];
+		time_countdown(SYSTCK, TIMER);
 	}
 
 	uint8_t byte = USART_Read_Non_Blocking(USART2);
@@ -125,26 +155,35 @@ void run_remote_op() {
 
 void run_local_op() {
 
-	if (SM_BTN_LAST_RELEASE[0] > 0) {
-		printf("%s\r\n", "Stop Listening for second button");
-		SM_BTN_LAST_RELEASE[0] = 0;
-		SM_BTN_LAST_RELEASE[1] = 0;
-	}
-	if (SM_BTN_LAST_RELEASE[1] > 0 || SM_BTN_LAST_RELEASE[0] > 0) {
-		time_countdown(SYSTCK, SM_BTN_LAST_RELEASE);
+	time_countdown(SYSTCK, TIMER);
+	if (timestamp_diff(SM_BTN_DOWN_TIMESTAMP,TIMER) > 11 && SM_BTN_PRESSED == 0) {
+//		printf("%s\r\n", "Stop Listening for second button");
+		SM_BTN_DOWN_TIMESTAMP[0] = 0;
+		SM_BTN_DOWN_TIMESTAMP[1] = 0;
+//		TIMER[0] = 0;
+//		TIMER[1] = 0;
+		if (LOCAL_MODE_BIN_CONTROL > 0 && LOCAL_MODE_BIN_CONTROL < 3) {
+			run_local_cmd(LOCAL_MODE_BIN_CONTROL);
+			LOCAL_MODE_BIN_CONTROL = 0;
+		}
 	}
 
 	if (SM_BTN_PRESSED > 0 || SM_BTN_PRESSED_ITERATOR > 0) {
 
 		SM_BTN_PRESSED_ITERATOR++;
-		time_countdown(SYSTCK, SM_BTN_HELD_TIME);
 
 		if (SM_BTN_PRESSED == 2 && (SM_BTN_PRESSED_ITERATOR > (SM_BTN_PRESSED_MOMENT + 1))) {
 			SM_BTN_PRESSED = 0;
 			SM_BTN_PRESSED_ITERATOR = 0;
-			printf("Last Button Pressed: %d\r\n", TIME);
+
+			if (LOCAL_MODE_BIN_CONTROL == 3) {
+				run_local_cmd(LOCAL_MODE_BIN_CONTROL);
+				LOCAL_MODE_BIN_CONTROL = 0;
+			}
 		}
 	}
+
+
 
 	//Clear the USART Reading
 	USART_Read_Non_Blocking(USART2);

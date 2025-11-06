@@ -31,6 +31,30 @@ void display_menu() {
 	printf("%s\r\n", "STOP - Stop the song (Led off)");
 }
 
+void run_local_cmd(int state) {
+	printf("Playing State: %d\r\n", state);
+//	if (state == 1) {
+//		if (get_pause_state() == 0) {
+//			printf("%s\r\n", "Pausing...");
+//			set_state_pause();
+//		}
+//		else {
+//			printf("%s\r\n", "Playing...");
+//			set_state_play();
+//			run_play();
+//		}
+//	}
+//	else if (state == 2) {
+//		int new_song = run_next(get_current_song());
+//		set_current_song(new_song);
+//	}
+//	else if (state == 3) {
+//		printf("%s\r\n", "Stopping...");
+//		set_state_clear();
+//		run_stop();
+//	}
+}
+
 void run_command(char* buffer) {
 	if (strcmp(buffer, "NEXT") == 0) {
 		int new_song = run_next(get_current_song());
@@ -63,9 +87,13 @@ void time_countdown(struct sys_tick* systck, int time_vars[]) {
 		if (time_vars[1] == 10) { // Count to 10 tenths then print next second
 			time_vars[0]++;
 			time_vars[1] = 0;
-			if (get_current_mode() == 0 && get_pause_state() == 1) {
-				if (time_vars[1] % 2 == 0) {LED_Off();}
-				else {LED_On();}
+			if (get_pause_state() == 1) {
+				if (time_vars[0] % 2 == 0) {
+					LED_Off();
+				}
+				else {
+					LED_On();
+				}
 			}
 		}
 	}
