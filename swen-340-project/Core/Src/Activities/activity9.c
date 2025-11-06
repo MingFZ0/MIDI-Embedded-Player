@@ -23,15 +23,15 @@ void blue_button() {
 	}
 }
 
-void EXTI15_10_IRQHandler(void) {
-	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
-	printf("%s\r\n", "Pressed");
-}
-
-void EXTI9_5_IRQHandler(void) {
-	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
-	printf("%s\r\n", "Small Button Pressed");
-}
+//void EXTI15_10_IRQHandler(void) {
+//	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
+//	printf("%s\r\n", "Pressed");
+//}
+//
+//void EXTI9_5_IRQHandler(void) {
+//	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
+//	printf("%s\r\n", "Small Button Pressed");
+//}
 
 void blue_button_interrupt() {
 	GPIO_Init();

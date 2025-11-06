@@ -2,9 +2,11 @@
  * This file consists of any utility files for the project
  */
 
+#include "GPIO.h"
 #include "project.h"
 #include "commands.h"
 #include "printf.h"
+#include "stm32l4xx.h"
 #include <string.h>
 
 void clear_buffer(char *buffer, int size) {
@@ -52,4 +54,30 @@ void run_command(char* buffer) {
 	}
 	else { printf("%s\r\n", "*Invalid Command");}
 	printf("\r\n");
+}
+
+void time_countdown(struct sys_tick* systck, int count, int time, int re_vars[]) {
+	int re_count = count;
+	int re_time = time;
+	if (systck->CSR) {
+		re_count++;
+		if (re_count == 100) { // Count to 10 tenths then print next second
+			re_time++;
+			re_count = 0;
+		}
+	}
+	re_vars[0] = re_count;
+	re_vars[1] = re_time;
+	return;
+}
+
+void EXTI15_10_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
+	flip_operation_mode();
+}
+
+void EXTI9_5_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
+	small_button_check();
+//	printf("%s\r\n", "Small Button Pressed");
 }

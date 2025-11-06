@@ -8,6 +8,16 @@
 #ifndef INC_PROJECT_H_
 #define INC_PROJECT_H_
 
+#include "stm32l4xx.h"
+
+
+struct sys_tick {
+	uint32_t CSR;
+	uint32_t RVR;
+	uint32_t CVR;
+	uint32_t CALIB;
+};
+void flip_operation_mode();
 void set_state_pause();
 void set_state_play();
 void set_state_clear();
