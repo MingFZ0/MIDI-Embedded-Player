@@ -61,10 +61,10 @@ void time_countdown(struct sys_tick* systck, int count, int time, int re_vars[])
 	int re_time = time;
 	if (systck->CSR & (1<<16)) {
 		re_count++;
+		printf("Second: %d | %d\r\n", re_time, re_count);
 		if (re_count == 10) { // Count to 10 tenths then print next second
 			re_time++;
 			re_count = 0;
-			printf("Second: %d\r\n", re_time);
 		}
 	}
 	re_vars[0] = re_count;
