@@ -129,12 +129,12 @@ void run_project() {
 
 			printf("%d | %d\r\n", TIME, TIMER_COUNT);
 
-			if () {
-				SM_BTN_PRESSED_TIME = 0;
-				SM_BTN_PRESSED_TIMER_COUNT = 0;
-				TIMER_COUNT = 0;
-				TIME = 0;
-			}
+//			if () {
+//				SM_BTN_PRESSED_TIME = 0;
+//				SM_BTN_PRESSED_TIMER_COUNT = 0;
+//				TIMER_COUNT = 0;
+//				TIME = 0;
+//			}
 		}
 
 		if (STATE_PAUSE == 1) {
