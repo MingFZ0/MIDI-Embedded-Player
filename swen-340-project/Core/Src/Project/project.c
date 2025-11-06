@@ -57,17 +57,17 @@ void flip_operation_mode() {
 }
 
 void small_button_check() {
-//	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_COUNT == 0) {
-//		SM_BTN_PRESSED = 1;
-//		printf("Init Count: %d\r\n", SM_BTN_PRESSED_COUNT);
-//	}
-//	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_COUNT > 0) {
-//		SM_BTN_PRESSED = 0;
-//		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_COUNT;
-//		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_COUNT);
-//	}
-//
-	printf("Pressed\r\n");
+	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_COUNT == 0) {
+		SM_BTN_PRESSED = 1;
+		printf("Init Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+	}
+	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_COUNT > 0) {
+		SM_BTN_PRESSED = 0;
+		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_COUNT;
+		printf("Final Timer Count: %d\r\n", SM_BTN_PRESSED_COUNT);
+	}
+
+//	printf("Pressed\r\n");
 }
 
 int get_current_mode() {return REMOTE_MODE;}
