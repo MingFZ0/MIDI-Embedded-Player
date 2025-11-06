@@ -7,6 +7,7 @@
 #include "commands.h"
 #include "printf.h"
 #include "stm32l4xx.h"
+#include "LED.h"
 #include <string.h>
 
 void clear_buffer(char *buffer, int size) {
@@ -62,6 +63,10 @@ void time_countdown(struct sys_tick* systck, int time_vars[]) {
 		if (time_vars[1] == 10) { // Count to 10 tenths then print next second
 			time_vars[0]++;
 			time_vars[1] = 0;
+			if (get_current_mode() == 0 && get_pause_state() == 1) {
+				if (time_vars[1] % 2 == 0) {LED_Off();}
+				else {LED_On();}
+			}
 		}
 	}
 	return;

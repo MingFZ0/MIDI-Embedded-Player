@@ -18,6 +18,8 @@ struct sys_tick {
 	uint32_t CALIB;
 };
 void flip_operation_mode();
+int get_current_mode();
+int get_pause_state();
 void set_state_pause();
 void set_state_play();
 void set_state_clear();

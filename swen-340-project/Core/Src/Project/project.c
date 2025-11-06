@@ -77,6 +77,7 @@ void small_button_check() {
 }
 
 int get_current_mode() {return REMOTE_MODE;}
+int get_pause_state() {return STATE_PAUSE;}
 void set_state_pause() {STATE_PAUSE = 1;STATE_PLAY = 0;}
 void set_state_play() {STATE_PAUSE = 0;STATE_PLAY = 1;}
 void set_state_clear() {STATE_PAUSE = 0;STATE_PLAY = 0;}
