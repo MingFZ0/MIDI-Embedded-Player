@@ -157,7 +157,7 @@ void project_init() {
 	clear_buffer(BUFFER, 10);
 
 	//Timer
-	SYSTCK->RVR = 8000000 - 1;
+	SYSTCK->RVR = 79;
 	SYSTCK->CSR |= 1<<2;
 	SYSTCK->CSR |= 1;
 }
