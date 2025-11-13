@@ -129,6 +129,9 @@ int run_next(int current_song) {
 	ptr = song.p_song;
 	printf("%s", "Tempo: ");
 	print_song_tempo(ptr);
+
+
+
 	return next_song_index;
 }
 
