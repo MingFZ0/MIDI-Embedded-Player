@@ -1,1 +1,8 @@
 write in decmial the duration of 1 tick in seconds ofr each of your songs
+
+Song 1:
+	- Tempo: 631577
+	- Division: 256
+	- Midi Tick: 631577/256 = 2467
+
+	

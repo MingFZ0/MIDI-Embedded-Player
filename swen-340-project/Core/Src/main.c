@@ -14,6 +14,7 @@
 #include "activity6.h"
 #include "activity7.h"
 #include "activity10.h"
+#include "activity12.h"
 
 #include "homework6.h"
 
@@ -43,8 +44,9 @@ int main(void){
 //	blue_button();
 //	blue_button_interrupt();
 //	homework6_run();
-	run_project();
+//	run_project();
 
 //	activity10_run();
+	run_activity12();
 }
 
