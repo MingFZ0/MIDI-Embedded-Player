@@ -15,6 +15,7 @@
 #include "activity7.h"
 #include "activity10.h"
 #include "activity12.h"
+#include "activity13.h"
 
 #include "homework6.h"
 
@@ -29,7 +30,9 @@ int main(void){
 	System_Clock_Init(); // set System Clock = 80 MHz
 	LED_Init();
 	UART2_Init();
-	
+//
+//	init_systick();
+
 //	char buffer[64];
 //	int n = sprintf(buffer, "Hello, World!\r\n");
 //	USART_Write(USART2, (unsigned char *) buffer, n);
@@ -47,6 +50,7 @@ int main(void){
 //	run_project();
 
 //	activity10_run();
-	run_activity12();
+	activity_13();
+//	run_activity12();
 }
 

@@ -158,6 +158,7 @@ void project_init() {
 
 	//Timer
 	SYSTCK->RVR = 79;
+	SYSTCK->CSR |= 1 << 1;
 	SYSTCK->CSR |= 1<<2;
 	SYSTCK->CSR |= 1;
 }
