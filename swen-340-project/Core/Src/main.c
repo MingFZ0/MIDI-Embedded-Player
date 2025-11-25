@@ -18,6 +18,8 @@
 #include "activity13.h"
 
 #include "homework6.h"
+#include "hw8.h"
+
 
 
 #include <stdio.h>
@@ -50,7 +52,8 @@ int main(void){
 //	run_project();
 
 //	activity10_run();
-	activity_13();
+//	activity_13();
 //	run_activity12();
+	hw8_run();
 }
 
