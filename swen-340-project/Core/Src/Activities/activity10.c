@@ -11,19 +11,20 @@
 static int count = 0;
 
 
-void SysTick_Handler() {
-	count++;
-}
-
-uint32_t get_count() {return count;}
+//void SysTick_Handler() {
+//	count++;
+//}
+//
+//uint32_t get_count() {return count;}
 
 void activity10_run() {
 	printf("r\n");
 	init_systick();
 
 	while (1) {
-		if (count & 1024 == 0) {
+		if ((count & 1024) == 0) {
 				printf("%d\r", count >> 10);
 			}
+		printf("%d\r", count);
 	}
 }

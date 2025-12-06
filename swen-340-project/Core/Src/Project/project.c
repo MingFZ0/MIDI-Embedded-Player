@@ -39,10 +39,9 @@ static int SM_BTN_PRESSED = 0;					// 0 is none | 1 is pressed down | 2 is relea
 static int SM_BTN_PRESSED_MOMENT = 0;			// Marks the count of the iterator at the time the small button is interacted
 static int SM_BTN_PRESSED_ITERATOR = 0;
 
-static int SM_BTN_DOWN_TIMESTAMP[2] = {0,0};
-static int SM_BTN_UP_TIMESTAMP[2] = {0,0};
-
-static int SM_BTN_HELD_TIME = 0;
+static int LAST_BTN_DOWN_TIME = 0;
+static int LAST_BTN_UP_TIME = 0;
+static int BTN_HELD_TIME = 0;
 
 static int LOCAL_MODE_BIN_CONTROL = 0;			// 1 = play/pause	| 2 = next	| 3 = stop
 
@@ -71,16 +70,6 @@ void flip_operation_mode() {
 }
 
 /**
- * Helper function to copy an time_stamp array to another
- * Parameter: int time_stamp[2], int timer[2]
- * Return: void
- */
-void record_timestamp(int time_stamp[2], int timer[2]) {
-	time_stamp[0] = timer[0];
-	time_stamp[1] = timer[1];
-}
-
-/**
  * Helper function to find the difference between the two time_stamp	| Timestamp = [ second, 10th of a second ]
  * Parameter: int timestamp1[2], int timestamp2[2]
  * Return: the difference between the two timestamp
@@ -91,6 +80,10 @@ int timestamp_diff(int timestamp1[2], int timestamp2[2]) {
 	int result = stamp2_count - stamp1_count;
 //	if (result > 10) {printf("%d - %d = %d\r\n", stamp2_count, stamp1_count, result);}
 	return result;
+}
+
+int convert_count_to_ms(int count) {
+	return (count / 8000);
 }
 
 /**
@@ -106,13 +99,13 @@ void small_button_check() {
 	if (SM_BTN_PRESSED == 0 && SM_BTN_PRESSED_ITERATOR == 0) {
 
 		if (LOCAL_MODE_BIN_CONTROL == 0) {LOCAL_MODE_BIN_CONTROL = 1;}
-		else if (LOCAL_MODE_BIN_CONTROL == 1) {LOCAL_MODE_BIN_CONTROL = 2;}
+		else if ((LOCAL_MODE_BIN_CONTROL == 1)) {LOCAL_MODE_BIN_CONTROL = 2;}
 
 		SM_BTN_PRESSED = 1;										//Sets the state to be DOWN
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
-		record_timestamp(SM_BTN_DOWN_TIMESTAMP, TIMER);
-		SM_BTN_DOWN_TIMESTAMP[1]++;
-//		printf("		Button Down at: %d, %d\r\n", SM_BTN_DOWN_TIMESTAMP[0], SM_BTN_DOWN_TIMESTAMP[1]);
+
+		LAST_BTN_DOWN_TIME = get_count();
+		//printf("		Button Down at: %d\r\n", LAST_BTN_DOWN_TIME);
 	}
 
 	//Button Up
@@ -120,23 +113,22 @@ void small_button_check() {
 	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_ITERATOR > 0) {
 
 		SM_BTN_PRESSED = 2;										//Sets the state to be UP
-		record_timestamp(SM_BTN_UP_TIMESTAMP, TIMER);
+
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
 
-		//Determines the held time by subtracting the down timestamp and up timestamp
-		//Bug with running into a race condition of down timestamp being reset to 0 before it is being read
-		SM_BTN_HELD_TIME = timestamp_diff(SM_BTN_DOWN_TIMESTAMP, SM_BTN_UP_TIMESTAMP);
+		LAST_BTN_UP_TIME = get_count();
+		BTN_HELD_TIME = convert_count_to_ms(LAST_BTN_UP_TIME - LAST_BTN_DOWN_TIME);	// measured in ms
 
-//		printf("		Button Up at: %d, %d\r\n", SM_BTN_UP_TIMESTAMP[0], SM_BTN_UP_TIMESTAMP[1]);
-//		printf("		Button Held For: %d\r\n", SM_BTN_HELD_TIME);
+		//printf("		Button Up at: %d, %d\r\n", TIMER[0], TIMER[1]);
+		//printf("		Button Up at: %d\r\n", get_count());
+		//printf("		Button Held For: %d\r\n", BTN_HELD_TIME);
 
-		if (SM_BTN_HELD_TIME >= 10) {
-			LOCAL_MODE_BIN_CONTROL = 3;
-		}
+		if (BTN_HELD_TIME >= 100) {LOCAL_MODE_BIN_CONTROL = 3;}
 	}
 }
 
 int get_current_mode() {return REMOTE_MODE;}
+int get_play_state() {return STATE_PLAY;}
 int get_pause_state() {return STATE_PAUSE;}
 void set_state_pause() {STATE_PAUSE = 1;STATE_PLAY = 0;}
 void set_state_play() {STATE_PAUSE = 0;STATE_PLAY = 1;}
@@ -170,7 +162,7 @@ void project_init() {
  */
 void run_remote_op() {
 
-	if (STATE_PAUSE == 1) {
+	if (STATE_PAUSE == 1 && STATE_PLAY == 0) {
 		time_countdown(SYSTCK, TIMER);
 	}
 
@@ -202,17 +194,9 @@ void run_local_op() {
 	time_countdown(SYSTCK, TIMER);
 
 	//This code runs 1 second after the button has been pressed DOWN
-
-	if (timestamp_diff(SM_BTN_DOWN_TIMESTAMP,TIMER) > 11 && SM_BTN_PRESSED == 0) {
-//		printf("%s\r\n", "Stop Listening for second button");
-//		printf("%d, %d\r\n", SM_BTN_DOWN_TIMESTAMP[0], SM_BTN_DOWN_TIMESTAMP[1]);
-
-		//Resets the down button timestamp
-		SM_BTN_DOWN_TIMESTAMP[0] = 0;
-		SM_BTN_DOWN_TIMESTAMP[1] = 0;
-
-//		TIMER[0] = 0;
-//		TIMER[1] = 0;
+	int diff = convert_count_to_ms(get_count() - LAST_BTN_UP_TIME);
+	if (diff > 100 && SM_BTN_PRESSED == 0) {
+		//printf("%s\r\n", "Stop Listening for second button");
 
 		//Runs the corresponding command based on the button state
 		if (LOCAL_MODE_BIN_CONTROL > 0 && LOCAL_MODE_BIN_CONTROL < 3) {
@@ -221,7 +205,7 @@ void run_local_op() {
 		}
 	}
 
-	//When the button is pressed down, the iterator will start incrementing
+//	//When the button is pressed down, the iterator will start incrementing
 	if (SM_BTN_PRESSED > 0 || SM_BTN_PRESSED_ITERATOR > 0) {
 
 		SM_BTN_PRESSED_ITERATOR++;

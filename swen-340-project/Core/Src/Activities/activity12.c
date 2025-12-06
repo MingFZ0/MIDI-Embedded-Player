@@ -10,4 +10,6 @@ void run_activity12() {
 	DAC_Init ();
 	DAC_Start ();
 	DAC_Set_Value (3000);
+
+
 }

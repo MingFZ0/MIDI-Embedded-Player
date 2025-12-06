@@ -10,6 +10,31 @@
 #include "LED.h"
 #include <string.h>
 
+static int count = 0;
+
+/**
+ * Handler for the blue button
+ */
+void EXTI15_10_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
+	flip_operation_mode();
+}
+
+/**
+ * Handler for the small button
+ */
+void EXTI9_5_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
+	small_button_check();
+//	printf("%s\r\n", "Small Button Pressed");
+}
+
+void SysTick_Handler() {
+	count++;
+}
+
+uint32_t get_count() {return count;}
+
 /**
  * This method clears the buffer that is passed in
  * Parameter: char *buffer, int size
@@ -49,7 +74,7 @@ void display_menu() {
 void run_local_cmd(int state) {
 //	printf("Playing State: %d\r\n", state);
 	if (state == 1) {
-		if (get_pause_state() == 1) {
+		if (get_play_state() == 0) {
 			printf("%s\r\n", "Playing...");
 			set_state_play();
 			run_play();
@@ -110,7 +135,7 @@ void run_command(char* buffer) {
 void time_countdown(struct sys_tick* systck, int time_vars[]) {
 	if (systck->CSR & (1<<16)) {
 		time_vars[1]++;
-		if (time_vars[1] == 1000000) { // Count to 10 tenths then print next second
+		if (time_vars[1] == 300000) { // Count to 10 tenths then print next second
 			time_vars[0]++;
 			time_vars[1] = 0;
 			if (get_pause_state() == 1) {
@@ -124,21 +149,4 @@ void time_countdown(struct sys_tick* systck, int time_vars[]) {
 		}
 	}
 	return;
-}
-
-/**
- * Handler for the blue button
- */
-void EXTI15_10_IRQHandler(void) {
-	HAL_GPIO_EXTI_IRQHandler(B1_Pin);
-	flip_operation_mode();
-}
-
-/**
- * Handler for the small button
- */
-void EXTI9_5_IRQHandler(void) {
-	HAL_GPIO_EXTI_IRQHandler(S1_Pin);
-	small_button_check();
-//	printf("%s\r\n", "Small Button Pressed");
 }

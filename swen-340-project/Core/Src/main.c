@@ -13,7 +13,7 @@
 #include "activity5.h"
 #include "activity6.h"
 #include "activity7.h"
-#include "activity10.h"
+//#include "activity10.h"
 #include "activity12.h"
 #include "activity13.h"
 
@@ -49,11 +49,11 @@ int main(void){
 //	blue_button();
 //	blue_button_interrupt();
 //	homework6_run();
-//	run_project();
+	run_project();
 
 //	activity10_run();
 //	activity_13();
 //	run_activity12();
-	hw8_run();
+//	hw8_run();
 }
 

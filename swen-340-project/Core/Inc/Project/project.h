@@ -19,6 +19,7 @@ struct sys_tick {
 };
 void flip_operation_mode();
 int get_current_mode();
+int get_play_state();
 int get_pause_state();
 void set_state_pause();
 void set_state_play();
