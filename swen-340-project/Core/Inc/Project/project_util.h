@@ -17,8 +17,5 @@ void run_local_cmd(int state);
 void run_command(char* buffer);
 void time_countdown(struct sys_tick* systck, int time_vars[]);
 uint32_t get_count();
-unsigned char* skip_to_byte(unsigned char* ptr, int byte);
-unsigned char* skip_to_track(unsigned char* ptr);
-unsigned int get_track_length(unsigned char* ptr);
 
 #endif

@@ -4,6 +4,7 @@
 #include "convert_to_uint32.h"
 #include "convert_to_uint16.h"
 #include "project_util.h"
+#include "parse.h"
 
 /**
  * Prints the song event based on the given target_byte
@@ -142,33 +143,5 @@ void run_pause(struct sys_tick* systck, int count, int time, int re_vars[]) {
 	re_vars[0] = re_count;
 	re_vars[1] = re_time;
 	return;
-}
-
-void read_track(unsigned char* ptr) {
-	int length = get_track_length(ptr);
-
-	unsigned char* track = ptr + 4;
-	for (int i = 0; i< length; i++) {
-
-		unsigned char cur = *track;
-		unsigned char after_cur = (unsigned char) (cur >> 4);
-
-		printf("	Before: %02X => %02X ", cur, after_cur);
-
-		if (after_cur == 0b00001010) {
-			printf("	%s \r\n", "Polyphonic Key Pressure");
-		}
-		else if (after_cur == 0b00001001) {
-			printf("	%s \r\n", "Note On Event");
-		}
-		else if (after_cur == 0b00001000) {
-			printf("	%s \r\n", "Note Off Event");
-		}
-		else {
-			printf("\r\n");
-		}
-
-		track++;
-	}
 }
 
