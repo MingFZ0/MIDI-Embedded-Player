@@ -1,9 +1,12 @@
+#include "parse.h"
 #include "printf.h"
 #include "stm32l4xx.h"
 #include "GPIO.h"
 
 #include <stdint.h>
 #include <string.h>
+
+static int byte_skipped_from_delay_check = 0;
 
 /**
  * Helper function used to skip to a certain byte; Useful for parsing song information based on the leading byte
@@ -60,30 +63,86 @@ int get_track_length(unsigned char* ptr) {
 	return result;
 }
 
+uint32_t get_event_delay (uint8_t* event) {
+
+	int value = 0;
+	byte_skipped_from_delay_check = 0;
+
+	//printf(" Start From: %02X \r\n", (unsigned char) *event);
+	while (1) {
+		unsigned char *current_byte = event;
+		value = value << 7;
+		value |= (*current_byte & 0x7F);
+
+		//printf("	Current Byte: %02X => %d", *current_byte, value);
+
+		if (!(*event & 0b10000000)) {
+			//printf(" End with: %02X \r\n", (unsigned char) *event);
+//			printf("	Total value: %d\r\n", value);
+			break;
+		}
+		event++;
+		byte_skipped_from_delay_check++;
+	}
+//	printf("\r\n");
+	return value;
+}
+
+enum event_types get_event_type(unsigned char* event) {
+	unsigned char event_type = (unsigned char) (*event >> 4);
+
+	if (event_type == 0x0A) {
+		printf("	%s \r\n", "Polyphonic Key Pressure");
+		return pressure;
+	}
+	else if (event_type == 0x09) {
+		printf("	%s \r\n", "Note On Event");
+		return note_on;
+	}
+	else if (event_type == 0x08) {
+		printf("	%s \r\n", "Note Off Event");
+		return note_off;
+	}
+	return -1;
+}
+
+uint8_t get_event_channel(unsigned char* event) {
+	return (uint8_t) (*event & 0x0F);
+}
+
+
+
 void read_track(unsigned char* ptr) {
+	int track_iter_count = 0;
 	int length = get_track_length(ptr);
 
-	unsigned char* track = ptr + 8;		//Skips the MTrk & track length
-	for (int i = 0; i< length; i++) {
+	ptr += 8;		//Skips the MTrk & track length
+	//printf(" Start with: %02X \r\n", *ptr);
+	while (track_iter_count < length) {
 
-		unsigned char event = (unsigned char) (*track >> 4);
-		unsigned char channel = (unsigned char) (*track & 0x0F);
+		uint32_t delay = get_event_delay((uint8_t*) ptr);
 
-		printf("	Before: %02X => %02X | %02X ", *track, event, channel);
+		enum event_types event_type = get_event_type(ptr);
+		uint8_t channel = get_event_channel(ptr);
 
-		if (event == 0x0A) {
-			printf("	%s \r\n", "Polyphonic Key Pressure");
-		}
-		else if (event == 0x09) {
-			printf("	%s \r\n", "Note On Event");
-		}
-		else if (event == 0x08) {
-			printf("	%s \r\n", "Note Off Event");
-		}
-		else {
+		if ((event_type >= 0) && (event_type <= 2)) {
+			printf(" Found in: %02X | %d \r\n", *ptr, track_iter_count);
+			printf(" Delay: %lu \r\n", delay);
+			printf(" Event Type: %d \r\n", event_type);
+			printf(" Channel: %d \r\n", channel);
 			printf("\r\n");
+
+			track_iter_count += byte_skipped_from_delay_check;
+			track_iter_count += 3;
+		} else {
+			//printf("		%02X | %d\r\n", *ptr, track_iter_count);
 		}
 
-		track++;
+		//printf(" Iter count: %d \r\n", track_iter_count);
+		ptr++;
+		track_iter_count++;
 	}
+	printf(" Ends with: %02X | %d \r\n", *ptr, track_iter_count);
 }
+
+

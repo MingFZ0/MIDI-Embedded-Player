@@ -5,8 +5,8 @@
 #include "stm32l4xx.h"
 
 enum event_types {
-	note_on,
 	note_off,
+	note_on,
 	pressure
 };
 

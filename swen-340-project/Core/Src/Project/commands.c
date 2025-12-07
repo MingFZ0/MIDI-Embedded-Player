@@ -110,6 +110,9 @@ int run_next(int current_song) {
 	printf("Song length: %d\r\n", length);
 	read_track(ptr);
 	ptr++;
+	printf("%s \r\n", "Next Track:");
+	printf("%s", "Byte Info: ");
+	printf("Song length: %d\r\n", length);
 	read_track(skip_to_track(ptr));
 
 	return next_song_index;
