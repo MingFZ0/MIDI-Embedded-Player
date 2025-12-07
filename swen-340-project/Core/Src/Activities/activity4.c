@@ -29,4 +29,8 @@ void run() {
 	printf("Format: 0x%04x\r\n", convert_to_uint16((uint8_t*) &(p_header->format)));
 	printf("Num Tracks: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->ntrks)));
 	printf("Division: %d\r\n", convert_to_uint16((uint8_t*) &(p_header->division)));
+
+//	printf("\r\n");
+//
+//	skip_to_track(get_song(0).p_song);
 }

@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 uint32_t convert_to_uint32(uint8_t* p_value) {
+	printf(" p[0]: %02X ; p[1]: %02X ; p[2]: %02X ; p[3]: %02X \r\n", p_value[0], p_value[1], p_value[2], p_value[3]);
 	uint32_t value1 = p_value[0] << (3*8);	// 0x 78 00 00 00
 	uint32_t value2 = p_value[1] << (2*8);  // 0x 00 56 00 00
 	uint32_t value3 = p_value[2] << (1*8); 	// 0x 00 00 34 00

@@ -5,8 +5,6 @@
 uint32_t paseDelay (uint8_t* delay) {
 
 	int value = 0;
-	int power = 0;
-	int loop = 1;
 
 	while (1) {
 		uint8_t *current_byte = delay;
@@ -22,16 +20,8 @@ uint32_t paseDelay (uint8_t* delay) {
 	}
 
 	printf("\r\n");
+	return value;
 }
-
-//int pow(int base, int expo) {
-//	int val = base;
-//	if (expo == 0) {return 1;}
-//	for (int i = 0; i < expo; i++) {
-//		val = val * expo;
-//	}
-//	return val;
-//}
 
 void hw8_run() {
 	printf("%s", "First:\r\n");

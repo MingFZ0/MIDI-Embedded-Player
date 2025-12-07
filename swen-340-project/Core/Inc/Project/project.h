@@ -10,13 +10,6 @@
 
 #include "stm32l4xx.h"
 
-
-struct sys_tick {
-	uint32_t CSR;
-	uint32_t RVR;
-	uint32_t CVR;
-	uint32_t CALIB;
-};
 void flip_operation_mode();
 int get_current_mode();
 int get_play_state();

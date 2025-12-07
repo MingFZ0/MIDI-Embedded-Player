@@ -2,6 +2,7 @@
 #include "systick.h"
 #include "tone.h"
 #include "printf.h"
+#include "project_util.h"
 
 void play_freq(uint16_t hz) {
 	uint32_t rollover = hertz_to_systicks (hz);

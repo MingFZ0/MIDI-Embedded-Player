@@ -3,37 +3,7 @@
 #include "song.h"
 #include "convert_to_uint32.h"
 #include "convert_to_uint16.h"
-
-struct sys_tick {
-	uint32_t CSR;
-	uint32_t RVR;
-	uint32_t CVR;
-	uint32_t CALIB;
-};
-
-/**
- * Helper function used to skip to a certain byte; Useful for parsing song information based on the leading byte
- * Parameter: unsigned char* ptr -> the var type for the song, int byte -> the byte that needs to be looked for
- * Return: void
- */
-unsigned char* skip_to_byte(unsigned char* ptr, int byte) {
-	int counter = 0;
-	while (1) {
-		if (*ptr == 255) {
-			unsigned char* p_next = ptr + 1;
-			if (*p_next == byte) {
-				//printf("ptr is at %d | next is at %d \r\n", *ptr, *p_next);
-				ptr++;
-				return ptr;
-			}
-		}
-		if (counter > 100) {
-			return 0;
-		}
-		counter++;
-		ptr++;
-	}
-}
+#include "project_util.h"
 
 /**
  * Prints the song event based on the given target_byte
@@ -95,6 +65,7 @@ void print_song_tempo(unsigned char* p_song) {
  */
 void run_play() {
 	LED_On();
+
 }
 
 /**
@@ -130,7 +101,15 @@ int run_next(int current_song) {
 	printf("%s", "Tempo: ");
 	print_song_tempo(ptr);
 
-
+	ptr = song.p_song;
+	ptr = skip_to_track(ptr);
+	int length = get_track_length(ptr);
+	printf("\r\n");
+	printf("%s", "Byte Info: ");
+	printf("Song length: %d\r\n", length);
+	read_track(ptr);
+	ptr++;
+	read_track(skip_to_track(ptr));
 
 	return next_song_index;
 }
@@ -165,4 +144,31 @@ void run_pause(struct sys_tick* systck, int count, int time, int re_vars[]) {
 	return;
 }
 
+void read_track(unsigned char* ptr) {
+	int length = get_track_length(ptr);
+
+	unsigned char* track = ptr + 4;
+	for (int i = 0; i< length; i++) {
+
+		unsigned char cur = *track;
+		unsigned char after_cur = (unsigned char) (cur >> 4);
+
+		printf("	Before: %02X => %02X ", cur, after_cur);
+
+		if (after_cur == 0b00001010) {
+			printf("	%s \r\n", "Polyphonic Key Pressure");
+		}
+		else if (after_cur == 0b00001001) {
+			printf("	%s \r\n", "Note On Event");
+		}
+		else if (after_cur == 0b00001000) {
+			printf("	%s \r\n", "Note Off Event");
+		}
+		else {
+			printf("\r\n");
+		}
+
+		track++;
+	}
+}
 

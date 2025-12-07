@@ -1,7 +1,8 @@
 #ifndef _COMMANDS_H_
 #define	_COMMANDS_H_
 
-struct sys_tick;
+#include "project_util.h"
+
 void run_play();
 void run_stop();
 int run_next(int current_song);

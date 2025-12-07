@@ -45,14 +45,6 @@ static int BTN_HELD_TIME = 0;
 
 static int LOCAL_MODE_BIN_CONTROL = 0;			// 1 = play/pause	| 2 = next	| 3 = stop
 
-
-struct sys_tick {
-	uint32_t CSR;
-	uint32_t RVR;
-	uint32_t CVR;
-	uint32_t CALIB;
-};
-
 /**
  * This method flips between the operations mode of remote and local
  * Parameter: None
@@ -67,19 +59,6 @@ void flip_operation_mode() {
 		REMOTE_MODE = 0;
 		printf("\r\n%s\r\n", "***LOCAL MODE ACTIVE***");
 	}
-}
-
-/**
- * Helper function to find the difference between the two time_stamp	| Timestamp = [ second, 10th of a second ]
- * Parameter: int timestamp1[2], int timestamp2[2]
- * Return: the difference between the two timestamp
- */
-int timestamp_diff(int timestamp1[2], int timestamp2[2]) {
-	int stamp1_count = (timestamp1[0] * 10) + (timestamp1[1]);
-	int stamp2_count = (timestamp2[0] * 10) + (timestamp2[1]);
-	int result = stamp2_count - stamp1_count;
-//	if (result > 10) {printf("%d - %d = %d\r\n", stamp2_count, stamp1_count, result);}
-	return result;
 }
 
 int convert_count_to_ms(int count) {
@@ -103,7 +82,6 @@ void small_button_check() {
 
 		SM_BTN_PRESSED = 1;										//Sets the state to be DOWN
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
-
 		LAST_BTN_DOWN_TIME = get_count();
 		//printf("		Button Down at: %d\r\n", LAST_BTN_DOWN_TIME);
 	}
@@ -113,16 +91,10 @@ void small_button_check() {
 	else if (SM_BTN_PRESSED == 1 && SM_BTN_PRESSED_ITERATOR > 0) {
 
 		SM_BTN_PRESSED = 2;										//Sets the state to be UP
-
 		SM_BTN_PRESSED_MOMENT = SM_BTN_PRESSED_ITERATOR;
 
 		LAST_BTN_UP_TIME = get_count();
-		BTN_HELD_TIME = convert_count_to_ms(LAST_BTN_UP_TIME - LAST_BTN_DOWN_TIME);	// measured in ms
-
-		//printf("		Button Up at: %d, %d\r\n", TIMER[0], TIMER[1]);
-		//printf("		Button Up at: %d\r\n", get_count());
-		//printf("		Button Held For: %d\r\n", BTN_HELD_TIME);
-
+		BTN_HELD_TIME = convert_count_to_ms(LAST_BTN_UP_TIME - LAST_BTN_DOWN_TIME);
 		if (BTN_HELD_TIME >= 100) {LOCAL_MODE_BIN_CONTROL = 3;}
 	}
 }
