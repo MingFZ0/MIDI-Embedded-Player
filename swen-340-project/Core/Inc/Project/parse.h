@@ -7,7 +7,8 @@
 enum event_types {
 	note_off,
 	note_on,
-	pressure
+	pressure,
+	ones
 };
 
 struct event {
@@ -20,7 +21,7 @@ struct event {
 
 unsigned char* skip_to_byte(unsigned char* ptr, int byte);
 unsigned char* skip_to_track(unsigned char* ptr);
-int get_track_length(unsigned char* ptr);
+uint32_t get_track_length(unsigned char* ptr);
 void read_track(unsigned char* ptr);
 
 #endif

@@ -75,7 +75,8 @@ uint8_t remove_tone (uint8_t note) {
 }
 
 // Play any tones in the array
-void play_tones () {
+void play_tones ()
+{
 
 }
 
