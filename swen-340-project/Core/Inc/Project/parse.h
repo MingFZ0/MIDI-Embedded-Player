@@ -31,5 +31,6 @@ unsigned char* skip_to_byte(unsigned char* ptr, int byte);
 unsigned char* skip_to_track(unsigned char* ptr);
 uint32_t get_track_length(unsigned char* ptr);
 void read_track(unsigned char* ptr);
+void set_midi_header(unsigned char* ptr);
 
 #endif

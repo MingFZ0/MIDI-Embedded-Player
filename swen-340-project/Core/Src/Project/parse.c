@@ -2,6 +2,11 @@
 #include "printf.h"
 #include "stm32l4xx.h"
 #include "GPIO.h"
+#include "tone.h"
+#include "project.h"
+#include "project_util.h"
+#include "commands.h"
+#include "convert_to_uint16.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -105,7 +110,6 @@ uint32_t get_event_delay (uint8_t* event) {
 
 	int value = 0;
 	byte_skipped_from_delay_check = 1;
-//	unsigned char start_byte = *event;
 
 	//printf(" Start From: %02X \r\n", (unsigned char) *event);
 	while (1) {
@@ -113,11 +117,11 @@ uint32_t get_event_delay (uint8_t* event) {
 		value = value << 7;
 		value |= (*current_byte & 0x7F);
 
-//		printf("%02X ", *current_byte);
-//		printf("	Current Byte: %02X => %d", *current_byte, value);
+		//printf("%02X ", *current_byte);
+		//printf("	Current Byte: %02X => %d", *current_byte, value);
 
 		if (!(*event & 0b10000000)) {
-//			printf(" End with: %02X \r\n", (unsigned char) *event);
+			//printf(" End with: %02X \r\n", (unsigned char) *event);
 			//printf("	Total value: %d\r\n", value);
 			break;
 		}
@@ -125,7 +129,7 @@ uint32_t get_event_delay (uint8_t* event) {
 		byte_skipped_from_delay_check++;
 	}
 
-//	printf("	- Delay: %d \r\n", value);
+	//printf("	- Delay: %d \r\n", value);
 
 	return value;
 }
@@ -136,7 +140,7 @@ uint32_t get_event_delay (uint8_t* event) {
 int parse_meta_length(unsigned char* ptr) {
 
 	unsigned char* next = ptr + 1;
-//	printf("	ME at %02X of type %02X \r\n", *ptr, *next);
+	//printf("	ME at %02X of type %02X \r\n", *ptr, *next);
 
 	if (*(next) == 0x00) {
 		return 3;
@@ -171,7 +175,7 @@ int parse_meta_length(unsigned char* ptr) {
 		return delay + 2;
 	}
 	else {
-//		printf("%s \r\n", "Not a meta event");
+		//printf("%s \r\n", "Not a meta event");
 		return 1;
 	}
 }
@@ -181,17 +185,15 @@ int parse_meta_length(unsigned char* ptr) {
  */
 void read_track(unsigned char* ptr) {
 
-	uint16_t division = convert_to_uint16((uint8_t*) &(header->division));
-
 	int track_iter_count = 0;
 	int length = get_track_length(ptr);
 
 	ptr += 8;		//Skips the MTrk & track length
-	//printf(" Start with: %02X \r\n", *ptr);
 
+	//printf(" Start with: %02X \r\n", *ptr);
 	while (track_iter_count < length) {
 
-//		printf(" -> %02X \r\n", *ptr);
+		//printf(" -> %02X \r\n", *ptr);
 
 		if ((*ptr == 0x00) && (*(ptr + 1) == 0xff)) {
 
@@ -199,16 +201,16 @@ void read_track(unsigned char* ptr) {
 
 		else if (*ptr == 0xff) {							// Check if it is a meta event & skip it
 			int length = parse_meta_length(ptr);
-//			printf("	- Length: %d \r\n", length);
+			//printf("	- Length: %d \r\n", length);
 			length--;
 
 			for (int i =0; i < length; i++) {
-//				printf("%02X ", *ptr);
+				//printf("%02X ", *ptr);
 				ptr++;
 				track_iter_count++;
 			}
 			ptr--;
-//			printf("	<- %02X \r\n", *ptr);
+			//printf("	<- %02X \r\n", *ptr);
 		}
 		else {												// Check if it is a MIDI event and parse the information
 
@@ -220,17 +222,17 @@ void read_track(unsigned char* ptr) {
 			ptr++;
 
 			if ((event_type != note_on) && (event_type != note_off)) {		//Ignore all event if it is not note on or note off
-				if (event_type == ones) {
+				if (event_type == ones) {		//Skip one byte
 					track_iter_count++;
-//					printf("%02X ", *ptr);
+					//printf("%02X ", *ptr);
 				}
-				else {
+				else {							//Skip two bytes
 					ptr++;
 					track_iter_count += 2;
 				}
 			}
 			else {
-//				printf("*%02X %02X %02X", *(ptr-1), *(ptr), *(ptr+1));
+				//printf("*%02X %02X %02X", *(ptr-1), *(ptr), *(ptr+1));
 
 				uint8_t note = (uint8_t) *ptr;
 				ptr++;
@@ -248,20 +250,20 @@ void read_track(unsigned char* ptr) {
 		ptr++;
 		track_iter_count++;
 	}
-	int start_time = get_count();
 
+	//Plays the song
 	for (int i = 0; i < song_event_count; i++) {
 
 		struct event song_event = song_events[i];
-//		printf(" 	Delay: %lu \r\n", song_event.delay);
-//		printf(" 	Event Type: %d \r\n", (signed int) song_event.event_type);
-//		printf(" 	Channel: %d \r\n", song_event.channel);
-//		printf(" 	Note: %d \r\n", song_event.note);
-//		printf(" 	Velocity: %d \r\n", song_event.value);
-//		printf("\r\n");
+		//printf(" 	Delay: %lu \r\n", song_event.delay);
+		//printf(" 	Event Type: %d \r\n", (signed int) song_event.event_type);
+		//printf(" 	Channel: %d \r\n", song_event.channel);
+		//printf(" 	Note: %d \r\n", song_event.note);
+		//printf(" 	Velocity: %d \r\n", song_event.value);
+		//printf("\r\n");
 
 		int unit = get_song_tempo() / convert_to_uint16((uint8_t*) &(header->division));
-//		printf(" Unit %d \r\n", unit);
+		//printf(" Unit %d \r\n", unit);
 
 		uint32_t next_time = get_count() + (song_event.delay * unit);
 		add_tone(song_event.note, song_event.value);

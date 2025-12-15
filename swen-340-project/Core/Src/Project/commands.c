@@ -5,6 +5,7 @@
 #include "convert_to_uint16.h"
 #include "project_util.h"
 #include "parse.h"
+#include "project.h"
 
 static uint32_t song_tempo;
 
@@ -37,7 +38,7 @@ uint32_t get_song_tempo() {return song_tempo;}
  * Parameter: unsigned char* p_song
  * Return: void
  */
-uint32_t print_song_tempo(unsigned char* p_song) {
+void print_song_tempo(unsigned char* p_song) {
 	unsigned char* ptr = skip_to_byte(p_song, 81);
 
 	if (ptr == 0) {

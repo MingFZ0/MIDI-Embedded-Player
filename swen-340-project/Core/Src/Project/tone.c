@@ -8,6 +8,7 @@
 
 #include "tone.h"
 #include "project_util.h"
+#include "activity13.h"
 
 #define CPU_SPEED (80000000.0)
 #define MAX_TONES (1)

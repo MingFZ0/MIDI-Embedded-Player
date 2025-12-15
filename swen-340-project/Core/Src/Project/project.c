@@ -12,6 +12,7 @@
 #include "commands.h"
 #include "GPIO.h"
 #include "stm32l4xx.h"
+#include "tone.h"
 #include <string.h>
 
 #include "project_util.h"
