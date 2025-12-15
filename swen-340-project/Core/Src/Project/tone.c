@@ -7,6 +7,7 @@
 
 
 #include "tone.h"
+#include "project_util.h"
 
 #define CPU_SPEED (80000000.0)
 #define MAX_TONES (1)
@@ -77,7 +78,7 @@ uint8_t remove_tone (uint8_t note) {
 // Play any tones in the array
 void play_tones ()
 {
-
+	play_freq(hertz_to_systicks(tones[0].duration));
 }
 
 

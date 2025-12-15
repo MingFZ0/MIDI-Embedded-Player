@@ -7,6 +7,13 @@
 #include <string.h>
 
 static int byte_skipped_from_delay_check = 0;
+static struct midi_header* header;
+static struct event song_events[512];
+static int song_event_count;
+
+void set_midi_header(unsigned char* ptr) {
+	header = (struct midi_header*) (ptr);
+}
 
 /**
  * Helper function used to skip to a certain byte; Useful for parsing song information based on the leading byte
@@ -174,6 +181,8 @@ int parse_meta_length(unsigned char* ptr) {
  */
 void read_track(unsigned char* ptr) {
 
+	uint16_t division = convert_to_uint16((uint8_t*) &(header->division));
+
 	int track_iter_count = 0;
 	int length = get_track_length(ptr);
 
@@ -216,30 +225,51 @@ void read_track(unsigned char* ptr) {
 //					printf("%02X ", *ptr);
 				}
 				else {
-//					printf("%02X %02X", *(ptr), *(ptr+1));
 					ptr++;
 					track_iter_count += 2;
 				}
 			}
 			else {
+//				printf("*%02X %02X %02X", *(ptr-1), *(ptr), *(ptr+1));
+
+				uint8_t note = (uint8_t) *ptr;
 				ptr++;
 
 				uint8_t velocity = (uint8_t) *ptr;
 
-//				printf(" 	Delay: %lu \r\n", delay);
-//				printf(" 	Event Type: %d \r\n", (signed int) event_type);
-//				printf(" 	Channel: %d \r\n", channel);
-//				printf(" 	Velocity: %d r\n", velocity);
-//				printf("%s \r\n", ".");
-
-
+				struct event song_event = {delay, event_type, channel, note, velocity};
+				song_events[song_event_count] = song_event;
 
 				track_iter_count += byte_skipped_from_delay_check + 1;
+				song_event_count++;
 			}
 		}
 
 		ptr++;
 		track_iter_count++;
+	}
+	int start_time = get_count();
+
+	for (int i = 0; i < song_event_count; i++) {
+
+		struct event song_event = song_events[i];
+//		printf(" 	Delay: %lu \r\n", song_event.delay);
+//		printf(" 	Event Type: %d \r\n", (signed int) song_event.event_type);
+//		printf(" 	Channel: %d \r\n", song_event.channel);
+//		printf(" 	Note: %d \r\n", song_event.note);
+//		printf(" 	Velocity: %d \r\n", song_event.value);
+//		printf("\r\n");
+
+		int unit = get_song_tempo() / convert_to_uint16((uint8_t*) &(header->division));
+//		printf(" Unit %d \r\n", unit);
+
+		uint32_t next_time = get_count() + (song_event.delay * unit);
+		add_tone(song_event.note, song_event.value);
+
+		while (get_count() < next_time) {
+			play_tones();
+		}
+		remove_tone(song_event.note);
 	}
 }
 

@@ -116,6 +116,8 @@ int get_current_song() {return CURRENT_SONG;}
  */
 void project_init() {
 	GPIO_Init();
+	DAC_Init ();
+	DAC_Start ();
 
 	//Buffer
 	clear_buffer(BUFFER, 10);

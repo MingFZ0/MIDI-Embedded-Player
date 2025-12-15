@@ -11,12 +11,20 @@ enum event_types {
 	ones
 };
 
+struct midi_header {
+	char chunk_type [4];
+	unsigned int length;
+	short format;
+	unsigned short ntrks;
+	short division;
+};
+
 struct event {
-	uint8_t channel;
-	enum event_types event_type;
-	uint8_t note;
 	uint32_t delay;
-	uint32_t value;
+	enum event_types event_type;
+	uint8_t channel;
+	uint8_t note;
+	uint8_t value;
 };
 
 unsigned char* skip_to_byte(unsigned char* ptr, int byte);

@@ -6,6 +6,9 @@
 #include "project_util.h"
 #include "parse.h"
 
+static uint32_t song_tempo;
+
+
 /**
  * Prints the song event based on the given target_byte
  * Parameter: unsigned char* p_song, int target_byte
@@ -27,12 +30,14 @@ void print_song_meta_event(unsigned char* p_song, int target_byte) {
 	printf("\r\n");
 }
 
+uint32_t get_song_tempo() {return song_tempo;}
+
 /**
  * Prints the song tempo
  * Parameter: unsigned char* p_song
  * Return: void
  */
-void print_song_tempo(unsigned char* p_song) {
+uint32_t print_song_tempo(unsigned char* p_song) {
 	unsigned char* ptr = skip_to_byte(p_song, 81);
 
 	if (ptr == 0) {
@@ -52,6 +57,7 @@ void print_song_tempo(unsigned char* p_song) {
 	uint32_t value2 = ptr[1] << (1*8);  // 0x 00 a3 00
 	uint32_t value3 = ptr[2];			// 0x 00 00 19
 	uint32_t value4 = value1 + value2 + value3;
+	song_tempo = value4;
 	printf("%lu", value4);
 	printf("\r\n");
 }
@@ -65,7 +71,18 @@ void print_song_tempo(unsigned char* p_song) {
  * Return: void
  */
 void run_play() {
+
 	LED_On();
+
+	printf("	Playing Song %d \r\n", get_current_song());
+	song song = get_song(get_current_song());
+	unsigned char* ptr = song.p_song;
+
+	ptr = song.p_song;
+	ptr = skip_to_track(ptr);
+	read_track(ptr);
+	ptr++;
+	read_track(skip_to_track(ptr));
 
 }
 
@@ -91,6 +108,7 @@ int run_next(int current_song) {
 	printf("Song Index: %d\r\n", next_song_index);
 
 	unsigned char* ptr = song.p_song;
+	set_midi_header(ptr);
 	printf("%s", "Title: ");
 	print_song_meta_event(ptr, 3);
 
@@ -101,21 +119,6 @@ int run_next(int current_song) {
 	ptr = song.p_song;
 	printf("%s", "Tempo: ");
 	print_song_tempo(ptr);
-
-	ptr = song.p_song;
-	ptr = skip_to_track(ptr);
-//	uint32_t length = get_track_length(ptr);
-//	printf("\r\n");
-//	printf("%s \r\n", "Byte Info: ");
-//	printf("Song length: %d\r\n", length);
-	read_track(ptr);
-
-	ptr++;
-//	length = get_track_length(ptr);
-//	printf("%s \r\n", "Next Track:");
-//	printf("%s \r\n", "Byte Info: ");
-//	printf("Song length: %d\r\n", length);
-	read_track(skip_to_track(ptr));
 
 	return next_song_index;
 }
