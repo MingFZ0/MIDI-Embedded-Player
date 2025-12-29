@@ -16,6 +16,10 @@ There are a total of 4 operations that can be done.
 Songs are stored as a bunch of bytes within a songs array. Following the MIDI format, audio tracks and events are parsed out according to their variable lengths, and based on the MIDI Channel Voice Messages, notes are play/paused on the timing specified.
 
 
+# System Design
+
+To be written here
+
 ## Documentation
 
 - [SWEN 340 Course Site](https://www.se.rit.edu/~swen-340/syllabus.html)
